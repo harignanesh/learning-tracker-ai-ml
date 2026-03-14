@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenAI + System Design Learning System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --phase1: #6c63ff;
+    --phase2: #00d4aa;
+    --phase3: #ff6b6b;
+    --phase4: #ffd166;
+    --phase5: #f093fb;
+    --phase6: #4facfe;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* LAYOUT */
+  .shell { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.4;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-logo span {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    padding: 0 8px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--muted);
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 600; }
+
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 40px;
+    max-width: 1100px;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 32px;
+  }
+
+  .page-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 9px 18px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  /* PHASE CARDS */
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .phase-header:hover { background: var(--surface2); }
+
+  .phase-num {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .phase-title { font-weight: 700; font-size: 15px; }
+  .phase-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .phase-progress-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-pct {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 34px;
+    text-align: right;
+  }
+
+  .progress-ring {
+    width: 32px; height: 32px;
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 3; }
+  .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 0.5s; }
+
+  .phase-body {
+    padding: 0 22px 20px;
+    display: none;
+  }
+
+  .phase-card.open .phase-body { display: block; }
+
+  .phase-chevron {
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    margin-left: 6px;
+  }
+
+  .phase-card.open .phase-chevron { transform: rotate(180deg); }
+
+  /* TOPIC LIST */
+  .topic-list { list-style: none; margin-bottom: 14px; }
+
+  .topic-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13.5px;
+  }
+
+  .topic-item:last-child { border-bottom: none; }
+
+  .topic-check {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--border);
+    background: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-size: 10px;
+    color: transparent;
+  }
+
+  .topic-check.done {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #000;
+  }
+
+  .topic-text { flex: 1; }
+  .topic-text.done { text-decoration: line-through; color: var(--muted); }
+
+  /* MINI PROJECT BOX */
+  .mini-project {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 10px;
+  }
+
+  .mini-project-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent4);
+    margin-bottom: 6px;
+  }
+
+  .mini-project-name { font-size: 14px; font-weight: 600; }
+
+  .project-status-select {
+    margin-top: 10px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .status-chip {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .status-chip:hover { border-color: var(--border); color: var(--text); }
+  .status-chip.sel-todo { border-color: var(--muted); color: var(--muted); }
+  .status-chip.sel-doing { border-color: var(--accent4); color: var(--accent4); background: rgba(255,209,102,0.1); }
+  .status-chip.sel-done { border-color: var(--accent2); color: var(--accent2); background: rgba(0,212,170,0.1); }
+
+  .arch-flow {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+  }
+
+  .arch-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    color: var(--text);
+    font-size: 11px;
+  }
+
+  .arch-arrow { color: var(--muted); }
+
+  /* TAGS */
+  .tag {
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* DATABASE TABLES */
+  .db-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .db-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .db-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+
+  .db-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .db-table input[type="text"],
+  .db-table textarea,
+  .db-table select {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    width: 100%;
+    resize: none;
+    outline: none;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+
+  .db-table input[type="text"]:focus,
+  .db-table textarea:focus {
+    background: var(--surface2);
+  }
+
+  .db-table select {
+    cursor: pointer;
+  }
+
+  .add-row-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    border-top: 1px solid var(--border);
+    transition: color 0.15s;
+  }
+
+  .add-row-btn:hover { color: var(--accent); }
+
+  /* STATUS BADGES */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge-todo { background: rgba(112,112,160,0.2); color: var(--muted); }
+  .badge-doing { background: rgba(255,209,102,0.15); color: var(--accent4); }
+  .badge-done { background: rgba(0,212,170,0.15); color: var(--accent2); }
+  .badge-paused { background: rgba(255,107,107,0.15); color: var(--accent3); }
+
+  /* WEEK PLANNER */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  .day-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    min-height: 140px;
+  }
+
+  .day-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .day-focus {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .day-task {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .day-input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    width: 100%;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    resize: none;
+    min-height: 50px;
+    transition: border-color 0.15s;
+  }
+
+  .day-input:focus { border-color: var(--accent); }
+
+  /* SRS */
+  .srs-row td { font-size: 12px; }
+
+  .review-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .review-check {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    background: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-size: 9px;
+    color: transparent;
+  }
+
+  .review-check.done { background: var(--accent2); border-color: var(--accent2); color: #000; }
+
+  /* OVERALL PROGRESS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); }
+
+  /* WORKFLOW */
+  .workflow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .wf-step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+
+  .wf-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .wf-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wf-content {
+    padding-bottom: 24px;
+    flex: 1;
+  }
+
+  .wf-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .wf-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* TOOLS */
+  .tools-wrap {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .tool-tag {
+    background: rgba(108,99,255,0.12);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* UTILITY */
+  .flex { display: flex; }
+  .gap-2 { gap: 8px; }
+  .items-center { align-items: center; }
+  .mb-3 { margin-bottom: 12px; }
+  .mb-4 { margin-bottom: 16px; }
+  .mt-2 { margin-top: 8px; }
+  .text-muted { color: var(--muted); font-size: 12px; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* Pill select */
+  select.pill {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ===================== MOBILE TOPBAR ===================== */
+  .mobile-topbar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    z-index: 200;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .mobile-topbar-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    flex: 1;
+  }
+
+  .hamburger {
+    width: 36px; height: 36px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 5px;
+    background: none; border: none; cursor: pointer;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 20px; height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ===================== SIDEBAR OVERLAY (mobile) ===================== */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 149;
+  }
+
+  /* ===================== BOTTOM NAV (mobile) ===================== */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    padding: 6px 0 env(safe-area-inset-bottom, 6px);
+    overflow-x: auto;
+  }
+
+  .bottom-nav-inner {
+    display: flex;
+    gap: 2px;
+    padding: 0 8px;
+    min-width: max-content;
+  }
+
+  .bnav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    min-width: 56px;
+  }
+
+  .bnav-item .bnav-icon { font-size: 18px; line-height: 1; }
+  .bnav-item.active { color: var(--accent); background: rgba(108,99,255,0.12); }
+  .bnav-item:hover { color: var(--text); }
+
+  /* ===================== MEDIA QUERIES ===================== */
+  @media (max-width: 768px) {
+
+    /* Show mobile UI, hide desktop sidebar */
+    .mobile-topbar { display: flex; }
+    .bottom-nav { display: block; }
+
+    .sidebar {
+      position: fixed;
+      left: -260px;
+      top: 0; bottom: 0;
+      width: 240px;
+      z-index: 150;
+      transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
+      height: 100%;
+      padding-top: 60px;
+    }
+
+    .sidebar.open { left: 0; }
+    .sidebar-overlay.open { display: block; }
+
+    /* Main content adjustments */
+    .main {
+      padding: 72px 16px 80px;
+      max-width: 100%;
+    }
+
+    /* Stats grids: 2 columns on mobile */
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px;
+    }
+
+    /* Week grid: 1 column stack */
+    .week-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Page title sizing */
+    .page-title { font-size: 20px; }
+
+    /* 2-col goal grid → 1 col */
+    #page-goal > div[style*="grid-template-columns:1fr 1fr"],
+    #page-sd-overview > div[style*="grid-template-columns:1fr 1fr"] {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+    }
+
+    /* SD overview 4-col stats → 2 col */
+    #page-sd-overview .stats-row {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Phase header — compress */
+    .phase-header { padding: 14px 14px; gap: 10px; }
+    .phase-body { padding: 0 14px 16px; }
+    .phase-num { font-size: 11px; }
+    .phase-title { font-size: 13px; }
+    .phase-subtitle { font-size: 11px; }
+
+    /* Arch flow wrap nicely */
+    .arch-flow { gap: 4px; }
+    .arch-node { font-size: 10px; padding: 4px 7px; }
+
+    /* Tables: horizontal scroll */
+    .card > div[style*="overflow-x:auto"] { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .db-table { min-width: 700px; }
+
+    /* Workflow */
+    .wf-step:not(:last-child)::after { left: 17px; }
+    .wf-icon { width: 34px; height: 34px; font-size: 11px; }
+    .wf-title { font-size: 13px; }
+
+    /* Dashboard card grid → 1 col */
+    .main > div[style*="grid-template-columns:1fr 1fr"] {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+    .stat-num { font-size: 22px; }
+    .main { padding: 68px 12px 76px; }
+    .card { padding: 14px 16px; }
+    .page-title { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- MOBILE TOPBAR -->
+  <div class="mobile-topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-topbar-title" id="mobile-page-title">Dashboard</div>
+  </div>
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bnav-item active" id="bnav-dashboard" onclick="showPage('dashboard')"><span class="bnav-icon">📊</span>Dashboard</button>
+      <button class="bnav-item" id="bnav-roadmap" onclick="showPage('roadmap')"><span class="bnav-icon">🗺️</span>Roadmap</button>
+      <button class="bnav-item" id="bnav-sd-overview" onclick="showPage('sd-overview')"><span class="bnav-icon">🏗️</span>Sys Design</button>
+      <button class="bnav-item" id="bnav-weekly" onclick="showPage('weekly')"><span class="bnav-icon">📅</span>Weekly</button>
+      <button class="bnav-item" id="bnav-vault" onclick="showPage('vault')"><span class="bnav-icon">🗄️</span>Vault</button>
+      <button class="bnav-item" id="bnav-experiments" onclick="showPage('experiments')"><span class="bnav-icon">🧪</span>Experiments</button>
+      <button class="bnav-item" id="bnav-projects" onclick="showPage('projects')"><span class="bnav-icon">📁</span>Projects</button>
+      <button class="bnav-item" id="bnav-srs" onclick="showPage('srs')"><span class="bnav-icon">🔁</span>SRS</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <h1>GenAI + System Design<br>Learning System</h1>
+      <span>Built to track. Built to ship.</span>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">Overview</span>
+      <button class="nav-item active" onclick="showPage('dashboard', this)">
+        <span class="nav-dot" style="background:#6c63ff"></span> Dashboard
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">GenAI Track</span>
+      <button class="nav-item" onclick="showPage('roadmap', this)">
+        <span class="nav-dot" style="background:#00d4aa"></span> Roadmap
+      </button>
+      <button class="nav-item" onclick="showPage('weekly', this)">
+        <span class="nav-dot" style="background:#ffd166"></span> Weekly Planner
+      </button>
+      <button class="nav-item" onclick="showPage('workflow', this)">
+        <span class="nav-dot" style="background:#f093fb"></span> Workflow
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">System Design Track</span>
+      <button class="nav-item" onclick="showPage('sd-overview', this)">
+        <span class="nav-dot" style="background:#f97316"></span> Overview
+      </button>
+      <button class="nav-item" onclick="showPage('sd-casestudy', this)">
+        <span class="nav-dot" style="background:#e879f9"></span> Case Studies
+      </button>
+      <button class="nav-item" onclick="showPage('sd-fundamentals', this)">
+        <span class="nav-dot" style="background:#38bdf8"></span> Fundamentals
+      </button>
+      <button class="nav-item" onclick="showPage('sd-interview', this)">
+        <span class="nav-dot" style="background:#a3e635"></span> Interview
+      </button>
+      <button class="nav-item" onclick="showPage('sd-papers', this)">
+        <span class="nav-dot" style="background:#fb923c"></span> White Papers
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">Databases</span>
+      <button class="nav-item" onclick="showPage('vault', this)">
+        <span class="nav-dot" style="background:#4facfe"></span> Knowledge Vault
+      </button>
+      <button class="nav-item" onclick="showPage('experiments', this)">
+        <span class="nav-dot" style="background:#ff6b6b"></span> Experiments
+      </button>
+      <button class="nav-item" onclick="showPage('projects', this)">
+        <span class="nav-dot" style="background:#ffd166"></span> Projects
+      </button>
+      <button class="nav-item" onclick="showPage('srs', this)">
+        <span class="nav-dot" style="background:#f093fb"></span> Spaced Repetition
+      </button>
+    </div>
+
+    <div class="nav-section" style="margin-top:auto; padding-top:16px; border-top:1px solid var(--border);">
+      <span class="nav-label">Goal</span>
+      <button class="nav-item" onclick="showPage('goal', this)">
+        <span class="nav-dot" style="background:#00d4aa"></span> Final Skill Goal
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- ========================= DASHBOARD ========================= -->
+    <div id="page-dashboard" class="tab-panel active">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">Your GenAI learning progress at a glance</div>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(5,1fr);">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-topics">0</div>
+          <div class="stat-label">GenAI Topics Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-phases">0/6</div>
+          <div class="stat-label">Phases Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-sd">0</div>
+          <div class="stat-label">SD Topics Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-projects">0</div>
+          <div class="stat-label">Projects Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-vault">0</div>
+          <div class="stat-label">Vault Entries</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Phase Progress</div>
+          <span class="text-muted">Click a phase to open it →</span>
+        </div>
+        <div id="dashboard-phases"></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📅 This Week's Focus</div></div>
+          <div class="day-task">Set your weekly goal in the Weekly Planner section.</div>
+          <div id="week-goal-preview" style="font-size:14px;color:var(--text);">—</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔁 Due for Review</div></div>
+          <div id="srs-due-preview" style="font-size:13px;color:var(--muted);">Open Spaced Repetition to check.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= ROADMAP ========================= -->
+    <div id="page-roadmap" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Learning Roadmap</div>
+        <div class="page-subtitle">6 phases · Beginner → Agentic AI · Expand each phase to track topics</div>
+      </div>
+      <div id="roadmap-phases"></div>
+    </div>
+
+    <!-- ========================= WEEKLY PLANNER ========================= -->
+    <div id="page-weekly" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Weekly Learning Planner</div>
+        <div class="page-subtitle">One learning cycle per week. Notes auto-saved in browser.</div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header"><div class="card-title">📌 Week Goal</div></div>
+        <input type="text" id="week-goal-input" placeholder="e.g. Complete Phase 2 Prompt Engineering + run 3 experiments"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;"
+          oninput="saveWeekGoal(this.value)">
+      </div>
+
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+
+    <!-- ========================= WORKFLOW ========================= -->
+    <div id="page-workflow" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Implementation Workflow</div>
+        <div class="page-subtitle">The 5-step cycle from concept to working project</div>
+      </div>
+
+      <div class="workflow-steps">
+        <div class="wf-step">
+          <div class="wf-icon" style="background:rgba(108,99,255,0.2);color:var(--phase1);">01</div>
+          <div class="wf-content">
+            <div class="wf-title">Learn the Concept</div>
+            <div class="wf-desc">Read documentation, watch a video, or read a paper. Understand the "why" before the "how". Take notes in the Knowledge Vault.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-icon" style="background:rgba(0,212,170,0.2);color:var(--phase2);">02</div>
+          <div class="wf-content">
+            <div class="wf-title">Observe the Architecture</div>
+            <div class="wf-desc">Study system diagrams. For RAG: User Query → Embedding → Vector Search → Retrieve Context → LLM Response. Draw or note the flow.</div>
+            <div class="arch-flow" style="margin-top:10px;">
+              <span class="arch-node">User Query</span><span class="arch-arrow">→</span>
+              <span class="arch-node">Embedding</span><span class="arch-arrow">→</span>
+              <span class="arch-node">Vector Search</span><span class="arch-arrow">→</span>
+              <span class="arch-node">Retrieve Context</span><span class="arch-arrow">→</span>
+              <span class="arch-node">LLM Response</span>
+            </div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-icon" style="background:rgba(255,209,102,0.2);color:var(--phase4);">03</div>
+          <div class="wf-content">
+            <div class="wf-title">Replicate a Tutorial</div>
+            <div class="wf-desc">Follow a tutorial step-by-step. Don't copy-paste — type every line. This builds muscle memory. Log it in Experiments.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-icon" style="background:rgba(240,147,251,0.2);color:var(--phase5);">04</div>
+          <div class="wf-content">
+            <div class="wf-title">Modify the Implementation</div>
+            <div class="wf-desc">Change one thing at a time. Swap the model. Adjust chunking. Add a new tool. This is where real understanding happens.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-icon" style="background:rgba(79,172,254,0.2);color:var(--phase6);">05</div>
+          <div class="wf-content">
+            <div class="wf-title">Build the Mini Project</div>
+            <div class="wf-desc">Apply the concept end-to-end in a small project. Log it in Project Tracker. This is your portfolio evidence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= KNOWLEDGE VAULT ========================= -->
+    <div id="page-vault" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Knowledge Vault</div>
+        <div class="page-subtitle">A database for every concept you've learned. Click a cell to edit.</div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table class="db-table" id="vault-table">
+            <thead>
+              <tr>
+                <th style="min-width:110px">Topic</th>
+                <th style="min-width:140px">Concept</th>
+                <th style="min-width:150px">Why it Matters</th>
+                <th style="min-width:180px">Key Ideas</th>
+                <th style="min-width:160px">Architecture / Workflow</th>
+                <th style="min-width:160px">Code Example</th>
+                <th style="min-width:140px">Real World Use Cases</th>
+                <th style="min-width:120px">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="vault-body"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addVaultRow()">+ Add concept</button>
+      </div>
+    </div>
+
+    <!-- ========================= EXPERIMENTS ========================= -->
+    <div id="page-experiments" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Experiment Tracker</div>
+        <div class="page-subtitle">Log every experiment you run — prompts, code tweaks, model tests.</div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table class="db-table" id="exp-table">
+            <thead>
+              <tr>
+                <th style="min-width:160px">Experiment Name</th>
+                <th style="min-width:120px">Topic</th>
+                <th style="min-width:160px">Goal</th>
+                <th style="min-width:180px">Steps Performed</th>
+                <th style="min-width:160px">Result</th>
+                <th style="min-width:160px">What I Learned</th>
+                <th style="min-width:100px">Date</th>
+              </tr>
+            </thead>
+            <tbody id="exp-body"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addExpRow()">+ Add experiment</button>
+      </div>
+    </div>
+
+    <!-- ========================= PROJECTS ========================= -->
+    <div id="page-projects" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Project Tracker</div>
+        <div class="page-subtitle">Track all mini projects from idea to completion.</div>
+      </div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table class="db-table" id="proj-table">
+            <thead>
+              <tr>
+                <th style="min-width:160px">Project Name</th>
+                <th style="min-width:90px">Difficulty</th>
+                <th style="min-width:140px">Technologies</th>
+                <th style="min-width:180px">Description</th>
+                <th style="min-width:100px">Status</th>
+                <th style="min-width:100px">Start Date</th>
+                <th style="min-width:100px">End Date</th>
+                <th style="min-width:160px">Lessons Learned</th>
+              </tr>
+            </thead>
+            <tbody id="proj-body"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addProjRow()">+ Add project</button>
+      </div>
+    </div>
+
+    <!-- ========================= SRS ========================= -->
+    <div id="page-srs" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Spaced Repetition System</div>
+        <div class="page-subtitle">Review at Day 1 → Day 3 → Day 7 → Day 30. Tick each review when done.</div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">Review Process</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;">
+            <div style="font-size:20px;margin-bottom:6px;">📖</div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Step 1 — Read</div>
+            <div class="text-muted">Re-read your notes and key ideas in the Knowledge Vault</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;">
+            <div style="font-size:20px;margin-bottom:6px;">🗣️</div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Step 2 — Explain</div>
+            <div class="text-muted">Explain the concept out loud as if teaching someone</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:14px;">
+            <div style="font-size:20px;margin-bottom:6px;">💻</div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Step 3 — Implement</div>
+            <div class="text-muted">Re-run or re-read your code example from scratch</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table class="db-table" id="srs-table">
+            <thead>
+              <tr>
+                <th style="min-width:140px">Topic</th>
+                <th style="min-width:100px">Learned Date</th>
+                <th style="min-width:90px">Day 1</th>
+                <th style="min-width:90px">Day 3</th>
+                <th style="min-width:90px">Day 7</th>
+                <th style="min-width:90px">Day 30</th>
+                <th style="min-width:180px">Review Notes</th>
+              </tr>
+            </thead>
+            <tbody id="srs-body"></tbody>
+          </table>
+        </div>
+        <button class="add-row-btn" onclick="addSrsRow()">+ Add topic to review</button>
+      </div>
+    </div>
+
+    <!-- ========================= GOAL ========================= -->
+    <div id="page-goal" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Final Skill Goal</div>
+        <div class="page-subtitle">What you can build by the end of this learning system</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:10px;">🤖</div>
+          <div class="card-title mb-3">AI Chatbot</div>
+          <div class="text-muted">A multi-turn conversational assistant with memory and context management using any LLM API.</div>
+          <div class="tools-wrap"><span class="tool-tag">OpenAI</span><span class="tool-tag">LangChain</span><span class="tool-tag">Streamlit</span></div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:10px;">📄</div>
+          <div class="card-title mb-3">Document Analysis System</div>
+          <div class="text-muted">Upload any PDF and chat with it. Uses RAG to retrieve relevant chunks and answer questions.</div>
+          <div class="tools-wrap"><span class="tool-tag">RAG</span><span class="tool-tag">ChromaDB</span><span class="tool-tag">LangChain</span></div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:10px;">💻</div>
+          <div class="card-title mb-3">Coding Assistant</div>
+          <div class="text-muted">Context-aware code helper that understands your codebase and suggests improvements, fixes bugs.</div>
+          <div class="tools-wrap"><span class="tool-tag">Embeddings</span><span class="tool-tag">RAG</span><span class="tool-tag">Claude API</span></div>
+        </div>
+        <div class="card">
+          <div style="font-size:28px;margin-bottom:10px;">🔬</div>
+          <div class="card-title mb-3">Research Agent</div>
+          <div class="text-muted">An autonomous agent that searches the web, summarises papers, and writes research reports.</div>
+          <div class="tools-wrap"><span class="tool-tag">LangGraph</span><span class="tool-tag">Tools</span><span class="tool-tag">Memory</span></div>
+        </div>
+        <div class="card" style="grid-column:span 2;">
+          <div style="font-size:28px;margin-bottom:10px;">🎧</div>
+          <div class="card-title mb-3">Customer Support Automation Agent</div>
+          <div class="text-muted">A full agentic pipeline that classifies user intent, retrieves relevant policy, escalates edge cases, and drafts replies with minimal human input.</div>
+          <div class="tools-wrap"><span class="tool-tag">CrewAI</span><span class="tool-tag">RAG</span><span class="tool-tag">Guardrails</span><span class="tool-tag">Memory</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-3">Typical Agent Architecture</div>
+        <div class="arch-flow" style="justify-content:center; padding:14px 0;">
+          <span class="arch-node" style="background:rgba(108,99,255,0.15);border-color:rgba(108,99,255,0.4);">User Request</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(0,212,170,0.12);border-color:rgba(0,212,170,0.3);">Planner</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(255,209,102,0.12);border-color:rgba(255,209,102,0.3);">Tool Usage</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(240,147,251,0.12);border-color:rgba(240,147,251,0.3);">Retrieval</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(79,172,254,0.12);border-color:rgba(79,172,254,0.3);">LLM Reasoning</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(255,107,107,0.12);border-color:rgba(255,107,107,0.3);">Output</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= SD OVERVIEW ========================= -->
+    <div id="page-sd-overview" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">System Design Academy</div>
+        <div class="page-subtitle">systemdesign42 · 21k stars · Track your reading across all categories</div>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr); margin-bottom:24px;">
+        <div class="stat-card" style="border-color:rgba(233,121,249,0.3);">
+          <div class="stat-num" id="sd-stat-case" style="color:#e879f9;">0</div>
+          <div class="stat-label">Case Studies Read</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(56,189,248,0.3);">
+          <div class="stat-num" id="sd-stat-fund" style="color:#38bdf8;">0</div>
+          <div class="stat-label">Fundamentals Read</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(163,230,53,0.3);">
+          <div class="stat-num" id="sd-stat-int" style="color:#a3e635;">0</div>
+          <div class="stat-label">Interview Qs Done</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(251,146,60,0.3);">
+          <div class="stat-num" id="sd-stat-wp" style="color:#fb923c;">0</div>
+          <div class="stat-label">White Papers Read</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="card" style="cursor:pointer;" onclick="showPage('sd-casestudy')">
+          <div style="font-size:24px;margin-bottom:10px;">🏢</div>
+          <div class="card-title" style="color:#e879f9;">Case Studies</div>
+          <div class="text-muted" style="margin-top:6px;">Real-world system designs from companies like Netflix, Uber, Airbnb, Google, YouTube, WhatsApp and 40+ more.</div>
+          <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);" id="sd-case-progress-label">0 / 55 read</div>
+          <div style="height:4px;background:var(--border);border-radius:10px;margin-top:6px;overflow:hidden;"><div id="sd-case-bar" style="height:100%;background:#e879f9;border-radius:10px;width:0%;transition:width 0.5s;"></div></div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showPage('sd-fundamentals')">
+          <div style="font-size:24px;margin-bottom:10px;">⚙️</div>
+          <div class="card-title" style="color:#38bdf8;">Fundamentals</div>
+          <div class="text-muted" style="margin-top:6px;">Core system design concepts: caching, load balancing, Kafka, Redis, databases, networking, APIs and more.</div>
+          <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);" id="sd-fund-progress-label">0 / 60 read</div>
+          <div style="height:4px;background:var(--border);border-radius:10px;margin-top:6px;overflow:hidden;"><div id="sd-fund-bar" style="height:100%;background:#38bdf8;border-radius:10px;width:0%;transition:width 0.5s;"></div></div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showPage('sd-interview')">
+          <div style="font-size:24px;margin-bottom:10px;">🎯</div>
+          <div class="card-title" style="color:#a3e635;">Interview Prep</div>
+          <div class="text-muted" style="margin-top:6px;">End-to-end system design interview walkthroughs: design Airbnb, ChatGPT, Spotify, YouTube, WhatsApp and more.</div>
+          <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);" id="sd-int-progress-label">0 / 10 done</div>
+          <div style="height:4px;background:var(--border);border-radius:10px;margin-top:6px;overflow:hidden;"><div id="sd-int-bar" style="height:100%;background:#a3e635;border-radius:10px;width:0%;transition:width 0.5s;"></div></div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="showPage('sd-papers')">
+          <div style="font-size:24px;margin-bottom:10px;">📜</div>
+          <div class="card-title" style="color:#fb923c;">White Papers</div>
+          <div class="text-muted" style="margin-top:6px;">Seminal engineering papers — Amazon Dynamo, Google Spanner, Meta XFaaS. The foundations of modern distributed systems.</div>
+          <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);" id="sd-wp-progress-label">0 / 3 read</div>
+          <div style="height:4px;background:var(--border);border-radius:10px;margin-top:6px;overflow:hidden;"><div id="sd-wp-bar" style="height:100%;background:#fb923c;border-radius:10px;width:0%;transition:width 0.5s;"></div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title" style="margin-bottom:12px;">📌 Suggested Study Order</div>
+        <div class="arch-flow" style="flex-wrap:wrap; gap:8px;">
+          <span class="arch-node" style="background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);color:#38bdf8;">1. Fundamentals</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(233,121,249,0.1);border-color:rgba(233,121,249,0.3);color:#e879f9;">2. Case Studies</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(251,146,60,0.1);border-color:rgba(251,146,60,0.3);color:#fb923c;">3. White Papers</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node" style="background:rgba(163,230,53,0.1);border-color:rgba(163,230,53,0.3);color:#a3e635;">4. Interview Prep</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================= SD CASE STUDIES ========================= -->
+    <div id="page-sd-casestudy" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Case Studies</div>
+        <div class="page-subtitle">Real system designs from real companies. Tick each one as you read it.</div>
+      </div>
+      <div id="sd-case-container"></div>
+    </div>
+
+    <!-- ========================= SD FUNDAMENTALS ========================= -->
+    <div id="page-sd-fundamentals" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">System Design Fundamentals</div>
+        <div class="page-subtitle">Core concepts you must know. Track your reading and review progress.</div>
+      </div>
+      <div id="sd-fund-container"></div>
+    </div>
+
+    <!-- ========================= SD INTERVIEW ========================= -->
+    <div id="page-sd-interview" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">System Design Interview</div>
+        <div class="page-subtitle">Practice end-to-end system design walkthroughs. One per company.</div>
+      </div>
+      <div id="sd-int-container"></div>
+    </div>
+
+    <!-- ========================= SD WHITE PAPERS ========================= -->
+    <div id="page-sd-papers" class="tab-panel">
+      <div class="page-header">
+        <div class="page-title">Software White Papers</div>
+        <div class="page-subtitle">Foundational papers that shaped modern distributed systems.</div>
+      </div>
+      <div id="sd-wp-container"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ===================== DATA =====================
+const PHASES = [
+  {
+    num: 1, color: '#6c63ff',
+    title: 'Generative AI Foundations',
+    subtitle: 'Neural Networks · Transformers · LLMs · Tokenisation',
+    topics: ['What is Generative AI','Neural networks basics','Transformers','Large Language Models (LLMs)','Tokens and context windows','Sampling: temperature & top-p'],
+    practice: 'Prompt experiments',
+    project: 'Simple chatbot using LLM API',
+    tools: [],
+    arch: []
+  },
+  {
+    num: 2, color: '#00d4aa',
+    title: 'Prompt Engineering',
+    subtitle: 'System Prompts · Few-shot · Chain-of-Thought',
+    topics: ['Prompt structure','System prompts','Few-shot prompting','Chain-of-thought prompting','Prompt evaluation'],
+    practice: 'Iterative prompt testing',
+    project: 'Prompt-based coding assistant',
+    tools: [],
+    arch: []
+  },
+  {
+    num: 3, color: '#ff6b6b',
+    title: 'Embeddings & Semantic Search',
+    subtitle: 'Vectors · Cosine Similarity · Vector DBs',
+    topics: ['Embeddings','Vector representations','Cosine similarity','Semantic search','Vector databases'],
+    practice: 'Compare embedding models',
+    project: 'Semantic document search engine',
+    tools: ['FAISS','Chroma','Pinecone','Weaviate'],
+    arch: []
+  },
+  {
+    num: 4, color: '#ffd166',
+    title: 'Retrieval Augmented Generation (RAG)',
+    subtitle: 'Chunking · Retrieval · Context Injection',
+    topics: ['RAG architecture','Document chunking','Retrieval strategies','Context injection','Hallucination reduction'],
+    practice: 'Build retrieval pipelines',
+    project: 'PDF chatbot',
+    tools: [],
+    arch: ['User Query','Embedding','Vector Search','Retrieve Context','LLM Response']
+  },
+  {
+    num: 5, color: '#f093fb',
+    title: 'AI System Engineering',
+    subtitle: 'Guardrails · Memory · Evaluation · Caching',
+    topics: ['Prompt templates','Guardrails','Memory in AI systems','Streaming responses','LLM caching','Evaluation pipelines'],
+    practice: 'Add evaluation to a RAG pipeline',
+    project: 'Production-ready RAG system',
+    tools: [],
+    arch: []
+  },
+  {
+    num: 6, color: '#4facfe',
+    title: 'Agentic AI',
+    subtitle: 'Agents · Tools · Planning · Multi-agent · Memory',
+    topics: ['AI agents','Tool usage','Planning and reasoning','Multi-agent collaboration','Memory systems'],
+    practice: 'Build a tool-using agent',
+    project: 'AI research assistant agent',
+    tools: ['LangGraph','AutoGen','CrewAI','Semantic Kernel'],
+    arch: ['User Request','Agent Planner','Tool Selection','Retrieval','LLM Reasoning','Final Output']
+  }
+];
+
+const WEEK_DAYS = [
+  { name:'MON', color:'#6c63ff', focus:'Learn', task:'Pick one concept from the roadmap. Read it deeply. Take notes in Knowledge Vault.' },
+  { name:'TUE', color:'#00d4aa', focus:'Experiment', task:'Run a small code experiment based on Monday\'s concept. Log it in Experiments.' },
+  { name:'WED', color:'#ff6b6b', focus:'Tutorial', task:'Follow a hands-on tutorial related to the concept. Type every line of code.' },
+  { name:'THU', color:'#ffd166', focus:'Modify', task:'Take your tutorial code and change something. Different model, different data, new feature.' },
+  { name:'FRI', color:'#f093fb', focus:'Note', task:'Write a clean summary in the Knowledge Vault. Add architecture, code snippet, use cases.' },
+  { name:'SAT', color:'#4facfe', focus:'Build', task:'Build the mini project for this phase. Even a basic version counts. Log it in Projects.' },
+  { name:'SUN', color:'#e0e0ff', focus:'Review', task:'Spaced repetition session. Read → Explain aloud → Re-check code. Tick review boxes in SRS.' }
+];
+
+// ===================== STATE =====================
+let topicState = {}; // { "p1-t0": true/false }
+let projectStatus = {}; // { "p1": "todo"|"doing"|"done" }
+let vaultRows = [];
+let expRows = [];
+let projRows = [
+  { name:'AI Chatbot', diff:'Beginner', tech:'OpenAI API, Python', desc:'Multi-turn chatbot with memory', status:'Todo', start:'', end:'', lessons:'' },
+  { name:'Semantic Search Engine', diff:'Intermediate', tech:'FAISS, Sentence Transformers', desc:'Search documents by meaning', status:'Todo', start:'', end:'', lessons:'' },
+  { name:'PDF Chatbot (RAG)', diff:'Intermediate', tech:'LangChain, ChromaDB', desc:'Chat with any PDF document', status:'Todo', start:'', end:'', lessons:'' },
+  { name:'AI Research Agent', diff:'Advanced', tech:'LangGraph, Tools, Memory', desc:'Autonomous research assistant', status:'Todo', start:'', end:'', lessons:'' }
+];
+let srsRows = [];
+let weekNotes = {};
+let weekGoal = '';
+
+function loadState() {
+  try {
+    topicState = JSON.parse(localStorage.getItem('topicState') || '{}');
+    projectStatus = JSON.parse(localStorage.getItem('projectStatus') || '{}');
+    vaultRows = JSON.parse(localStorage.getItem('vaultRows') || '[]');
+    expRows = JSON.parse(localStorage.getItem('expRows') || '[]');
+    const saved = JSON.parse(localStorage.getItem('projRows') || 'null');
+    if (saved) projRows = saved;
+    srsRows = JSON.parse(localStorage.getItem('srsRows') || '[]');
+    weekNotes = JSON.parse(localStorage.getItem('weekNotes') || '{}');
+    weekGoal = localStorage.getItem('weekGoal') || '';
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('topicState', JSON.stringify(topicState));
+  localStorage.setItem('projectStatus', JSON.stringify(projectStatus));
+  localStorage.setItem('vaultRows', JSON.stringify(vaultRows));
+  localStorage.setItem('expRows', JSON.stringify(expRows));
+  localStorage.setItem('projRows', JSON.stringify(projRows));
+  localStorage.setItem('srsRows', JSON.stringify(srsRows));
+  localStorage.setItem('weekNotes', JSON.stringify(weekNotes));
+  localStorage.setItem('weekGoal', weekGoal);
+}
+
+// ===================== NAVIGATION =====================
+const PAGE_TITLES = {
+  'dashboard': 'Dashboard',
+  'roadmap': 'GenAI Roadmap',
+  'weekly': 'Weekly Planner',
+  'workflow': 'Workflow',
+  'vault': 'Knowledge Vault',
+  'experiments': 'Experiments',
+  'projects': 'Projects',
+  'srs': 'Spaced Repetition',
+  'goal': 'Final Skill Goal',
+  'sd-overview': 'System Design',
+  'sd-casestudy': 'Case Studies',
+  'sd-fundamentals': 'Fundamentals',
+  'sd-interview': 'Interview',
+  'sd-papers': 'White Papers'
+};
+
+function showPage(id, fromEvent) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  if (fromEvent || (typeof event !== 'undefined' && event && event.currentTarget)) {
+    const btn = fromEvent || event.currentTarget;
+    btn.classList.add('active');
+  }
+  // Mobile topbar title
+  const titleEl = document.getElementById('mobile-page-title');
+  if (titleEl) titleEl.textContent = PAGE_TITLES[id] || id;
+  // Bottom nav active
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  const bnav = document.getElementById('bnav-' + id);
+  if (bnav) bnav.classList.add('active');
+  // Close sidebar on mobile
+  closeSidebar();
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'sd-overview') renderSdAll();
+}
+
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const hb = document.getElementById('hamburger');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
+  hb.classList.toggle('open');
+}
+
+function closeSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const hb = document.getElementById('hamburger');
+  sb.classList.remove('open');
+  ov.classList.remove('open');
+  hb.classList.remove('open');
+}
+
+// ===================== ROADMAP =====================
+function renderRoadmap() {
+  const container = document.getElementById('roadmap-phases');
+  container.innerHTML = '';
+  PHASES.forEach(p => {
+    const done = p.topics.filter((_, i) => topicState[`p${p.num}-t${i}`]).length;
+    const pct = Math.round((done / p.topics.length) * 100);
+    const circ = 2 * Math.PI * 13;
+    const offset = circ - (pct / 100) * circ;
+    const isOpen = document.querySelector(`#phase-card-${p.num}`)?.classList.contains('open');
+
+    const card = document.createElement('div');
+    card.className = 'phase-card' + (isOpen ? ' open' : '');
+    card.id = `phase-card-${p.num}`;
+
+    const topicItems = p.topics.map((t, i) => {
+      const isDone = topicState[`p${p.num}-t${i}`];
+      return `<li class="topic-item">
+        <div class="topic-check ${isDone ? 'done' : ''}" onclick="toggleTopic(${p.num},${i})" title="Mark done">${isDone ? '✓' : ''}</div>
+        <span class="topic-text ${isDone ? 'done' : ''}">${t}</span>
+      </li>`;
+    }).join('');
+
+    const toolsHtml = p.tools.length ? `<div class="tools-wrap" style="margin-top:10px;">${p.tools.map(t=>`<span class="tool-tag">${t}</span>`).join('')}</div>` : '';
+
+    const archHtml = p.arch.length ? `<div class="arch-flow" style="margin-top:10px;">${p.arch.map((n,i)=>
+      `<span class="arch-node">${n}</span>${i<p.arch.length-1?'<span class="arch-arrow">→</span>':''}`
+    ).join('')}</div>` : '';
+
+    const status = projectStatus[`p${p.num}`] || 'todo';
+
+    card.innerHTML = `
+      <div class="phase-header" onclick="togglePhase(${p.num})">
+        <div class="phase-num" style="background:${p.color}22;color:${p.color};">0${p.num}</div>
+        <div>
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-subtitle">${p.subtitle}</div>
+        </div>
+        <div class="phase-progress-wrap">
+          <svg class="progress-ring" viewBox="0 0 32 32">
+            <circle class="ring-bg" cx="16" cy="16" r="13"/>
+            <circle class="ring-fill" cx="16" cy="16" r="13" stroke="${p.color}"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <span class="phase-pct">${pct}%</span>
+          <span class="phase-chevron">▼</span>
+        </div>
+      </div>
+      <div class="phase-body">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:8px;">Topics</div>
+        <ul class="topic-list">${topicItems}</ul>
+        ${toolsHtml}
+        ${archHtml}
+        <div class="mini-project">
+          <div class="mini-project-label">Mini Project</div>
+          <div class="mini-project-name">${p.project}</div>
+          <div class="project-status-select">
+            <span class="status-chip ${status==='todo'?'sel-todo':''}" onclick="setProjectStatus(${p.num},'todo')">To Do</span>
+            <span class="status-chip ${status==='doing'?'sel-doing':''}" onclick="setProjectStatus(${p.num},'doing')">In Progress</span>
+            <span class="status-chip ${status==='done'?'sel-done':''}" onclick="setProjectStatus(${p.num},'done')">Done ✓</span>
+          </div>
+        </div>
+        ${p.practice ? `<div style="margin-top:10px;font-size:12px;color:var(--muted);">📌 Practice: ${p.practice}</div>` : ''}
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function togglePhase(num) {
+  const card = document.getElementById(`phase-card-${num}`);
+  card.classList.toggle('open');
+}
+
+function toggleTopic(phase, idx) {
+  const key = `p${phase}-t${idx}`;
+  topicState[key] = !topicState[key];
+  saveState();
+  renderRoadmap();
+  renderDashboard();
+}
+
+function setProjectStatus(phase, status) {
+  projectStatus[`p${phase}`] = status;
+  saveState();
+  renderRoadmap();
+  renderDashboard();
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  // Stats
+  const totalTopics = PHASES.reduce((a, p) => a + p.topics.length, 0);
+  const doneTopic = Object.values(topicState).filter(Boolean).length;
+  document.getElementById('stat-topics').textContent = `${doneTopic}/${totalTopics}`;
+
+  const activePhases = PHASES.filter(p => {
+    const done = p.topics.filter((_, i) => topicState[`p${p.num}-t${i}`]).length;
+    return done > 0;
+  }).length;
+  document.getElementById('stat-phases').textContent = `${activePhases}/6`;
+
+  const doneProjects = Object.values(projectStatus).filter(v => v === 'done').length;
+  document.getElementById('stat-projects').textContent = doneProjects;
+
+  document.getElementById('stat-vault').textContent = vaultRows.length;
+
+  // SD count
+  const sdDone = Object.values(sdState).filter(Boolean).length;
+  if (document.getElementById('stat-sd')) document.getElementById('stat-sd').textContent = sdDone;
+
+  // Phase mini bars
+  const dash = document.getElementById('dashboard-phases');
+  dash.innerHTML = PHASES.map(p => {
+    const done = p.topics.filter((_, i) => topicState[`p${p.num}-t${i}`]).length;
+    const pct = Math.round((done / p.topics.length) * 100);
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+        <span style="font-size:13px;font-weight:600;">Phase ${p.num}: ${p.title}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:12px;color:${p.color};">${pct}%</span>
+      </div>
+      <div style="height:5px;background:var(--border);border-radius:10px;overflow:hidden;cursor:pointer;" onclick="showPage('roadmap');document.querySelectorAll('.nav-item')[1].classList.add('active');">
+        <div style="height:100%;width:${pct}%;background:${p.color};border-radius:10px;transition:width 0.6s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Week goal
+  const wg = localStorage.getItem('weekGoal') || '';
+  document.getElementById('week-goal-preview').textContent = wg || '— not set yet';
+}
+
+// ===================== WEEKLY PLANNER =====================
+function renderWeekly() {
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+  const wg = document.getElementById('week-goal-input');
+  if (wg) wg.value = weekGoal;
+
+  WEEK_DAYS.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'day-card';
+    div.innerHTML = `
+      <div class="day-name" style="color:${d.color}">${d.name}</div>
+      <div class="day-focus" style="background:${d.color}22;color:${d.color};">${d.focus}</div>
+      <div class="day-task">${d.task}</div>
+      <textarea class="day-input" placeholder="What did you do today?" oninput="saveWeekNote(${i},this.value)">${weekNotes[i]||''}</textarea>`;
+    grid.appendChild(div);
+  });
+}
+
+function saveWeekNote(idx, val) {
+  weekNotes[idx] = val;
+  saveState();
+}
+
+function saveWeekGoal(val) {
+  weekGoal = val;
+  saveState();
+}
+
+// ===================== VAULT TABLE =====================
+function renderVault() {
+  const fields = ['topic','concept','why','ideas','arch','code','use','notes'];
+  const labels = ['Topic','Concept','Why it Matters','Key Ideas','Architecture','Code Example','Use Cases','Notes'];
+  const body = document.getElementById('vault-body');
+  body.innerHTML = '';
+  vaultRows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = fields.map(f =>
+      `<td><textarea rows="2" oninput="updateVault(${ri},'${f}',this.value)">${row[f]||''}</textarea></td>`
+    ).join('') + `<td><button onclick="deleteVaultRow(${ri})" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:16px;">×</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+function addVaultRow() {
+  vaultRows.push({});
+  saveState();
+  renderVault();
+  document.getElementById('stat-vault').textContent = vaultRows.length;
+}
+
+function deleteVaultRow(ri) {
+  vaultRows.splice(ri, 1);
+  saveState();
+  renderVault();
+}
+
+function updateVault(ri, field, val) {
+  vaultRows[ri][field] = val;
+  saveState();
+}
+
+// ===================== EXPERIMENTS =====================
+function renderExperiments() {
+  const fields = ['name','topic','goal','steps','result','learned','date'];
+  const body = document.getElementById('exp-body');
+  body.innerHTML = '';
+  expRows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = fields.map(f =>
+      `<td><textarea rows="2" oninput="updateExp(${ri},'${f}',this.value)">${row[f]||''}</textarea></td>`
+    ).join('') + `<td><button onclick="deleteExpRow(${ri})" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:16px;">×</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+function addExpRow() {
+  expRows.push({ date: new Date().toISOString().slice(0,10) });
+  saveState();
+  renderExperiments();
+}
+
+function deleteExpRow(ri) {
+  expRows.splice(ri, 1);
+  saveState();
+  renderExperiments();
+}
+
+function updateExp(ri, field, val) {
+  expRows[ri][field] = val;
+  saveState();
+}
+
+// ===================== PROJECTS =====================
+function renderProjects() {
+  const body = document.getElementById('proj-body');
+  body.innerHTML = '';
+  projRows.forEach((row, ri) => {
+    const statusOpts = ['Todo','In Progress','Done','Paused'];
+    const diffOpts = ['Beginner','Intermediate','Advanced'];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><textarea rows="2" oninput="updateProj(${ri},'name',this.value)">${row.name||''}</textarea></td>
+      <td>
+        <select class="pill" onchange="updateProj(${ri},'diff',this.value)">
+          ${diffOpts.map(d=>`<option ${row.diff===d?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </td>
+      <td><textarea rows="2" oninput="updateProj(${ri},'tech',this.value)">${row.tech||''}</textarea></td>
+      <td><textarea rows="2" oninput="updateProj(${ri},'desc',this.value)">${row.desc||''}</textarea></td>
+      <td>
+        <select class="pill" onchange="updateProj(${ri},'status',this.value)">
+          ${statusOpts.map(s=>`<option ${row.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="date" value="${row.start||''}" oninput="updateProj(${ri},'start',this.value)" style="background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none;width:100%;"></td>
+      <td><input type="date" value="${row.end||''}" oninput="updateProj(${ri},'end',this.value)" style="background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none;width:100%;"></td>
+      <td><textarea rows="2" oninput="updateProj(${ri},'lessons',this.value)">${row.lessons||''}</textarea></td>
+      <td><button onclick="deleteProjRow(${ri})" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:16px;">×</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+function addProjRow() {
+  projRows.push({ name:'', diff:'Beginner', tech:'', desc:'', status:'Todo', start:'', end:'', lessons:'' });
+  saveState();
+  renderProjects();
+}
+
+function deleteProjRow(ri) {
+  projRows.splice(ri, 1);
+  saveState();
+  renderProjects();
+}
+
+function updateProj(ri, field, val) {
+  projRows[ri][field] = val;
+  saveState();
+}
+
+// ===================== SRS =====================
+function renderSrs() {
+  const body = document.getElementById('srs-body');
+  body.innerHTML = '';
+  srsRows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    const checks = ['d1','d3','d7','d30'].map(d => {
+      const isDone = row[d];
+      return `<td><div class="review-cell">
+        <div class="review-check ${isDone?'done':''}" onclick="toggleReview(${ri},'${d}')">${isDone?'✓':''}</div>
+        <span style="font-size:11px;color:${isDone?'var(--accent2)':'var(--muted)'};">${isDone?'Done':'Pending'}</span>
+      </div></td>`;
+    }).join('');
+    tr.innerHTML = `
+      <td><input type="text" value="${row.topic||''}" oninput="updateSrs(${ri},'topic',this.value)" placeholder="Topic name"></td>
+      <td><input type="date" value="${row.date||''}" oninput="updateSrs(${ri},'date',this.value)" style="background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:100%;cursor:pointer;"></td>
+      ${checks}
+      <td><textarea rows="2" oninput="updateSrs(${ri},'notes',this.value)" placeholder="How well did you recall?">${row.notes||''}</textarea></td>
+      <td><button onclick="deleteSrsRow(${ri})" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:16px;">×</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+function addSrsRow() {
+  srsRows.push({ topic:'', date: new Date().toISOString().slice(0,10), d1:false, d3:false, d7:false, d30:false, notes:'' });
+  saveState();
+  renderSrs();
+}
+
+function deleteSrsRow(ri) {
+  srsRows.splice(ri, 1);
+  saveState();
+  renderSrs();
+}
+
+function toggleReview(ri, day) {
+  srsRows[ri][day] = !srsRows[ri][day];
+  saveState();
+  renderSrs();
+}
+
+function updateSrs(ri, field, val) {
+  srsRows[ri][field] = val;
+  saveState();
+}
+
+// ===================== SYSTEM DESIGN DATA =====================
+const SD_CASE_STUDIES = {
+  '#': [
+    {title:'Real-Time Gaming Leaderboard', url:'https://systemdesign.one/leaderboard-system-design/'},
+    {title:'Real-Time Live Comments', url:'https://systemdesign.one/live-comment-system-design/'},
+    {title:'Distributed Counter', url:'https://systemdesign.one/distributed-counter-system-design/'},
+    {title:'Real Time Presence Platform', url:'https://systemdesign.one/real-time-presence-platform-system-design/'}
+  ],
+  'Amazon / Apple': [
+    {title:'Scale an App to 10M Users on AWS', url:'https://newsletter.systemdesign.one/p/aws-scale'},
+    {title:'Airbnb HTTP Streaming (saved $84M)', url:'https://newsletter.systemdesign.one/p/what-is-critical-rendering-path'},
+    {title:'Amazon Prime Video Microservices Failure', url:'https://newsletter.systemdesign.one/p/prime-video-microservices'},
+    {title:'Amazon S3: 99.999999999% Durability', url:'https://newsletter.systemdesign.one/p/amazon-s3-durability'},
+    {title:'How Amazon Lambda Works', url:'https://newsletter.systemdesign.one/p/how-does-aws-lambda-work'},
+    {title:'How Amazon S3 Works', url:'https://newsletter.systemdesign.one/p/s3-architecture'},
+    {title:'How Apple AirTags Work', url:'https://newsletter.systemdesign.one/p/how-do-airtags-work'},
+    {title:'Apple Pay: 41M Transactions/Day Securely', url:'https://newsletter.systemdesign.one/p/how-does-apple-pay-work'},
+    {title:'Amazon S3 Strong Consistency', url:'https://newsletter.systemdesign.one/p/s3-strong-consistency'}
+  ],
+  'Bitly / Bluesky': [
+    {title:'Bitly URL Shortener Architecture', url:'https://systemdesign.one/url-shortening-system-design/'},
+    {title:'How Bluesky Works', url:'https://newsletter.systemdesign.one/p/how-does-bluesky-work'}
+  ],
+  'Canva / Cloudflare': [
+    {title:'Canva Real-Time Collaboration: 135M Users', url:'https://newsletter.systemdesign.one/p/rsocket'},
+    {title:'Cloudflare: 55M req/s With 15 Postgres Clusters', url:'https://newsletter.systemdesign.one/p/postgresql-scalability'}
+  ],
+  'Disney / Discord / Dropbox': [
+    {title:'Disney+ Hotstar: 5B Emojis in Real Time', url:'https://newsletter.systemdesign.one/p/hotstar-architecture'},
+    {title:'Disney+ Hotstar: 25M Concurrent Users', url:'https://newsletter.systemdesign.one/p/hotstar-scaling'},
+    {title:'Disney+ Scaled to 11M Users on Launch Day', url:'https://newsletter.systemdesign.one/p/disney-architecture'},
+    {title:'Discord Code-Splitting Performance', url:'https://newsletter.systemdesign.one/p/what-is-code-splitting-in-react'},
+    {title:'Dropbox: 100K Users in a Year', url:'https://newsletter.systemdesign.one/p/dropbox-architecture'}
+  ],
+  'Facebook / Figma': [
+    {title:'Facebook Live Video: 1 Billion Users', url:'https://newsletter.systemdesign.one/p/live-streaming-architecture'},
+    {title:'Facebook Software Load Balancer: 1B Users', url:'https://newsletter.systemdesign.one/p/facebook-load-balancer'},
+    {title:'Figma Scales Postgres to 4M Users', url:'https://newsletter.systemdesign.one/p/postgres-scale'}
+  ],
+  'Google / Giphy': [
+    {title:'How Google Search Works', url:'https://newsletter.systemdesign.one/p/search-engine-architecture'},
+    {title:'Giphy: 10B GIFs/Day to 1B Users', url:'https://newsletter.systemdesign.one/p/cdn-explained'},
+    {title:'Scale App to 100M Users on GCP', url:'https://newsletter.systemdesign.one/p/google-cloud-scalability'},
+    {title:'How Google Docs Works', url:'http://newsletter.systemdesign.one/p/how-does-google-docs-work'}
+  ],
+  'Hashnode / Halo / Instagram': [
+    {title:'Hashnode Feed Generation at Scale', url:'https://newsletter.systemdesign.one/p/feed-architecture'},
+    {title:'Halo: 11.6M Users with Saga Pattern', url:'https://newsletter.systemdesign.one/p/saga-design-pattern'},
+    {title:'Instagram Scaled to 2.5B Users', url:'https://newsletter.systemdesign.one/p/instagram-infrastructure'}
+  ],
+  'Khan / LinkedIn / Lyft': [
+    {title:'Khan Academy Scaled to 30M Users', url:'https://newsletter.systemdesign.one/p/khan-academy-architecture'},
+    {title:'LinkedIn Scaled to 930M Users', url:'https://newsletter.systemdesign.one/p/scalable-software-architecture'},
+    {title:'LinkedIn Protocol Buffers: -60% Latency', url:'https://newsletter.systemdesign.one/p/protocol-buffers-vs-json'},
+    {title:'Levels.fyi Tech Stack Evolution', url:'https://newsletter.systemdesign.one/p/levels-fyi-google-sheets'},
+    {title:'Lyft: Rides to 21M Users', url:'https://newsletter.systemdesign.one/p/lyft-engineering'}
+  ],
+  "McDonald's / Meta / Netflix": [
+    {title:"McDonald's Delivery: 20K Orders/sec", url:'https://newsletter.systemdesign.one/p/mcdonalds-architecture'},
+    {title:'Meta 99.99999999% Cache Consistency', url:'https://newsletter.systemdesign.one/p/cache-consistency'},
+    {title:'How Netflix Works', url:'https://newsletter.systemdesign.one/p/how-does-netflix-work'},
+    {title:'Netflix Microservices Lessons', url:'https://newsletter.systemdesign.one/p/netflix-microservices'},
+    {title:'Netflix Chaos Engineering', url:'https://newsletter.systemdesign.one/p/chaos-engineering'}
+  ],
+  'PayPal / Pastebin / Quora': [
+    {title:'PayPal: 1B Transactions/Day with 8 VMs', url:'https://newsletter.systemdesign.one/p/actor-model'},
+    {title:'Pastebin System Design', url:'https://systemdesign.one/system-design-pastebin/'},
+    {title:'Quora MySQL Sharding: 13+ TB', url:'https://newsletter.systemdesign.one/p/mysql-sharding'}
+  ],
+  'Razorpay / Reddit / Slack / SeatGeek': [
+    {title:'Razorpay: 1500 req/s Flash Sales', url:'https://newsletter.systemdesign.one/p/payment-gateway-architecture'},
+    {title:'How Reddit Works', url:'https://newsletter.systemdesign.one/p/reddit-architecture'},
+    {title:'Slack Architecture', url:'https://systemdesign.one/slack-architecture/'},
+    {title:'SeatGeek Virtual Waiting Room', url:'https://newsletter.systemdesign.one/p/virtual-waiting-room'}
+  ],
+  'Shopify / Stripe': [
+    {title:'Shopify: 32M req/min Flash Sales', url:'https://newsletter.systemdesign.one/p/shopify-flash-sale'},
+    {title:'Stripe Rate Limiting for Scalable APIs', url:'https://newsletter.systemdesign.one/p/rate-limiter'},
+    {title:'Stripe Idempotent API for Double Payment Prevention', url:'https://newsletter.systemdesign.one/p/idempotent-api'}
+  ],
+  'Tumblr / Tinder': [
+    {title:'Tumblr DB Migration: 60B Rows', url:'https://newsletter.systemdesign.one/p/how-to-migrate-a-mysql-database'},
+    {title:'Tumblr Open Source Guidelines', url:'https://newsletter.systemdesign.one/p/open-source-guidelines'},
+    {title:'Tinder: 1.6B Swipes/Day', url:'https://newsletter.systemdesign.one/p/tinder-architecture'}
+  ],
+  'Uber': [
+    {title:'Uber ETA at 500K req/sec', url:'https://newsletter.systemdesign.one/p/uber-eta'},
+    {title:'Uber Nearby Drivers at 1M req/sec', url:'https://newsletter.systemdesign.one/p/how-does-uber-find-nearby-drivers'},
+    {title:'Uber Payments: 30M Transactions/Day', url:'https://newsletter.systemdesign.one/p/payment-system-design'}
+  ],
+  'WhatsApp / WeChat / YouTube / Zapier / Zoom': [
+    {title:'WhatsApp: 50B Messages/Day with 32 Engineers', url:'https://newsletter.systemdesign.one/p/whatsapp-engineering'},
+    {title:'WeChat Architecture: 1.67B Monthly Users', url:'https://newsletter.systemdesign.one/p/chat-application-architecture'},
+    {title:'YouTube: 100M Views/Day with 9 Engineers', url:'https://newsletter.systemdesign.one/p/youtube-scalability'},
+    {title:'YouTube: 2.49B Users on MySQL', url:'https://newsletter.systemdesign.one/p/vitess-mysql'},
+    {title:'Zapier Automates Billions of Tasks', url:'https://newsletter.systemdesign.one/p/zapier-architecture'},
+    {title:'Zoom: 300M Video Calls/Day', url:'https://newsletter.systemdesign.one/p/zoom-architecture'}
+  ]
+};
+
+const SD_FUNDAMENTALS = {
+  'Core Concepts': [
+    {title:'Back of the Envelope Estimation', url:'https://systemdesign.one/back-of-the-envelope/'},
+    {title:'What Happens When You Type a URL?', url:'https://systemdesign.one/what-happens-when-you-type-url-into-your-browser/'},
+    {title:'System Design Interview Cheat Sheet', url:'https://systemdesign.one/system-design-interview-cheatsheet/'},
+    {title:'7 Ways to Fail System Design Interview', url:'https://newsletter.systemdesign.one/p/design-system-newsletter'},
+    {title:'11 System Design Concepts, Simply Explained', url:'https://newsletter.systemdesign.one/p/11-system-design-concepts-explained'},
+    {title:'114 System Design Concepts – Part 1', url:'https://newsletter.systemdesign.one/p/system-design-concepts'},
+    {title:'114 System Design Concepts – Part 2', url:'https://newsletter.systemdesign.one/p/system-design-core-concepts'},
+    {title:'Amazon Frugal Architecture Explained', url:'https://newsletter.systemdesign.one/p/frugal-architecture'},
+    {title:'The Entire CS Stack in 51 Images', url:'https://newsletter.systemdesign.one/p/computer-science-101'},
+    {title:'AI Coding Workflow', url:'https://newsletter.systemdesign.one/p/ai-coding-workflow'}
+  ],
+  'APIs & Networking': [
+    {title:'How API Gateway Works', url:'https://newsletter.systemdesign.one/p/how-api-gateway-works'},
+    {title:'API Gateway vs Load Balancer vs Reverse Proxy', url:'https://newsletter.systemdesign.one/p/api-gateway-load-balancer-reverse-proxy'},
+    {title:'Best Practices for API Design', url:'https://newsletter.systemdesign.one/p/best-practices-for-api-design'},
+    {title:'Best Practices for API Security', url:'https://newsletter.systemdesign.one/p/api-security-best-practices'},
+    {title:'API Versioning', url:'https://newsletter.systemdesign.one/p/api-versioning'},
+    {title:'How DNS Works', url:'https://newsletter.systemdesign.one/p/what-is-a-dns-server-and-how-does-it-work'},
+    {title:'How Does HTTPS Work', url:'https://newsletter.systemdesign.one/p/how-does-https-work'},
+    {title:'Must Know HTTP Headers', url:'https://newsletter.systemdesign.one/p/http-headers'},
+    {title:'How JWT Works', url:'https://newsletter.systemdesign.one/p/how-jwt-works'},
+    {title:'Forward Proxy vs Reverse Proxy', url:'https://newsletter.systemdesign.one/p/forward-proxy-vs-reverse-proxy'},
+    {title:'How Remote Procedure Call (RPC) Works', url:'https://newsletter.systemdesign.one/p/how-rpc-works'},
+    {title:'How WebSockets Work', url:'https://newsletter.systemdesign.one/p/how-do-websockets-work'},
+    {title:'How Webhooks Work', url:'https://newsletter.systemdesign.one/p/how-do-webhooks-work'}
+  ],
+  'Data & Storage': [
+    {title:'Bloom Filter', url:'https://systemdesign.one/bloom-filters-explained/'},
+    {title:'Quotient Filter', url:'https://systemdesign.one/quotient-filter-explained/'},
+    {title:'Consistent Hashing', url:'https://systemdesign.one/consistent-hashing-explained/'},
+    {title:'Consistency Patterns', url:'https://systemdesign.one/consistency-patterns/'},
+    {title:'Top 5 Caching Patterns', url:'https://newsletter.systemdesign.one/p/caching-patterns'},
+    {title:'Redis Use Cases', url:'https://newsletter.systemdesign.one/p/redis-use-cases'},
+    {title:'How Kafka Works', url:'https://newsletter.systemdesign.one/p/how-kafka-works'},
+    {title:'How Message Queues Work', url:'https://newsletter.systemdesign.one/p/what-is-a-message-queue'},
+    {title:'How Databases Keep Passwords Securely', url:'https://newsletter.systemdesign.one/p/how-to-store-passwords-in-database'}
+  ],
+  'Architecture Patterns': [
+    {title:'Actor Model', url:'https://newsletter.systemdesign.one/p/actor-model'},
+    {title:'Cell-Based Architecture', url:'https://newsletter.systemdesign.one/p/cell-based-architecture'},
+    {title:'Microservices: Scale with 1 Simple Technique', url:'https://newsletter.systemdesign.one/p/how-to-scale-microservices'},
+    {title:'Modular Monolith Architecture', url:'https://newsletter.systemdesign.one/p/modular-monolith'},
+    {title:'Micro Frontends', url:'https://newsletter.systemdesign.one/p/micro-frontends'},
+    {title:'21 Frontend System Design Concepts', url:'https://newsletter.systemdesign.one/p/frontend-system-design'},
+    {title:'Deployment Patterns', url:'https://newsletter.systemdesign.one/p/deployment-patterns'},
+    {title:'Distributed Systems Deep Dive', url:'https://newsletter.systemdesign.one/p/distributed-systems'},
+    {title:'Service Discovery', url:'https://systemdesign.one/what-is-service-discovery/'},
+    {title:'Sidecar Pattern', url:'https://newsletter.systemdesign.one/p/sidecar-pattern'},
+    {title:'Gossip Protocol', url:'https://systemdesign.one/gossip-protocol/'},
+    {title:'Hinted Handoff', url:'https://systemdesign.one/hinted-handoff/'}
+  ],
+  'Performance & Reliability': [
+    {title:'How Load Balancing Algorithms Work', url:'https://newsletter.systemdesign.one/p/load-balancing-algorithms'},
+    {title:'Rate Limiting Strategies Explained', url:'https://newsletter.systemdesign.one/p/rate-limiting'},
+    {title:'What Is High Availability', url:'https://newsletter.systemdesign.one/p/what-is-high-availability'},
+    {title:'15 Pitfalls That Break Cloud Systems', url:'https://newsletter.systemdesign.one/p/cloud-system-design'},
+    {title:'Concurrency Is Not Parallelism', url:'https://newsletter.systemdesign.one/p/concurrency-is-not-parallelism'},
+    {title:'How Nginx Handles 1M Concurrent Connections', url:'https://newsletter.systemdesign.one/p/how-does-nginx-work'}
+  ],
+  'AI & Modern Tech': [
+    {title:'LLM Concepts, Simply Explained', url:'https://newsletter.systemdesign.one/p/llm-concepts'},
+    {title:'How AI Agents Work', url:'https://newsletter.systemdesign.one/p/ai-agents-explained'},
+    {title:'What is Context Engineering?', url:'https://newsletter.systemdesign.one/p/what-is-context-engineering'},
+    {title:'Context Engineering vs Prompt Engineering', url:'https://newsletter.systemdesign.one/p/context-engineering-vs-prompt-engineering'},
+    {title:'MCP — A Deep Dive', url:'https://newsletter.systemdesign.one/p/how-mcp-works'},
+    {title:'How ChatGPT Apps Work', url:'https://newsletter.systemdesign.one/p/apps-in-chatgpt'},
+    {title:'Stock Exchange System Design Part 1', url:'https://newsletter.systemdesign.one/p/stock-exchange-system-design'},
+    {title:'Stock Exchange Concurrency at Scale Part 2', url:'https://newsletter.systemdesign.one/p/disruptor-pattern'},
+    {title:'Design Stock Exchange Deep Dive Part 3', url:'https://newsletter.systemdesign.one/p/system-design-stock-exchange'}
+  ],
+  'Dev Practices': [
+    {title:'Cybersecurity Terms Every Engineer Must Know', url:'https://newsletter.systemdesign.one/p/cybersecurity-fundamentals'},
+    {title:'How to Scale Code Reviews', url:'https://newsletter.systemdesign.one/p/how-to-do-code-review'},
+    {title:'Code Review Best Practices', url:'https://newsletter.systemdesign.one/p/code-review-best-practices'},
+    {title:'Stacked Diffs, Simply Explained', url:'https://newsletter.systemdesign.one/p/stacked-diffs'},
+    {title:'21 Git Commands', url:'https://newsletter.systemdesign.one/p/commands-in-git'}
+  ]
+};
+
+const SD_INTERVIEW = {
+  'Behavioral': [
+    {title:'Behavioral Interview Playbook', url:'https://newsletter.systemdesign.one/p/common-behavioral-interview-questions'}
+  ],
+  'System Design Interviews': [
+    {title:'Design Airbnb', url:'https://newsletter.systemdesign.one/p/airbnb-system-design'},
+    {title:'Design ChatGPT', url:'https://newsletter.systemdesign.one/p/chatgpt-system-design'},
+    {title:'Design Spotify', url:'https://newsletter.systemdesign.one/p/spotify-system-design'},
+    {title:'Design Web Crawler & Search Engine', url:'https://newsletter.systemdesign.one/p/web-crawler-system-design'},
+    {title:'Design Twitter/X Timeline (Frontend Deep Dive)', url:'https://newsletter.systemdesign.one/p/system-design-interview-twitter'},
+    {title:'Design WhatsApp Part 1', url:'https://newsletter.systemdesign.one/p/whatsapp-system-design'},
+    {title:'Design WhatsApp Part 2', url:'https://newsletter.systemdesign.one/p/design-a-chat-system'},
+    {title:'Design YouTube', url:'https://newsletter.systemdesign.one/p/youtube-system-design'}
+  ]
+};
+
+const SD_WHITE_PAPERS = {
+  'Seminal Papers': [
+    {title:'Amazon Dynamo Architecture', url:'https://newsletter.systemdesign.one/p/amazon-dynamo-architecture'},
+    {title:'Google Spanner', url:'https://newsletter.systemdesign.one/p/cloud-spanner-database'},
+    {title:'Meta Serverless Architecture: XFaaS', url:'https://newsletter.systemdesign.one/p/serverless-architecture'}
+  ]
+};
+
+// ===================== SD STATE =====================
+let sdState = {}; // key: "case-groupTitle-idx" → true/false
+
+function loadSdState() {
+  try { sdState = JSON.parse(localStorage.getItem('sdState') || '{}'); } catch(e) {}
+}
+
+function saveSdState() {
+  localStorage.setItem('sdState', JSON.stringify(sdState));
+}
+
+function toggleSd(key) {
+  sdState[key] = !sdState[key];
+  saveSdState();
+  renderSdAll();
+  renderDashboard();
+}
+
+// ===================== SD RENDERING =====================
+function renderSdSection(containerEl, dataObj, prefix, accentColor) {
+  containerEl.innerHTML = '';
+  let totalDone = 0, total = 0;
+  Object.entries(dataObj).forEach(([group, items]) => {
+    const groupDone = items.filter((_, i) => sdState[`${prefix}-${group}-${i}`]).length;
+    totalDone += groupDone;
+    total += items.length;
+    const card = document.createElement('div');
+    card.className = 'phase-card';
+    card.style.marginBottom = '12px';
+    const pct = Math.round((groupDone / items.length) * 100);
+    const itemsHtml = items.map((item, i) => {
+      const key = `${prefix}-${group}-${i}`;
+      const done = sdState[key];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div class="topic-check ${done?'done':''}" onclick="toggleSd('${key}')" style="${done?`background:${accentColor};border-color:${accentColor};`:`border-color:${accentColor}44;`}">${done?'✓':''}</div>
+        <a href="${item.url}" target="_blank" style="flex:1;font-size:13.5px;color:${done?'var(--muted)':'var(--text)'};text-decoration:${done?'line-through':'none'};transition:color 0.15s;" onmouseover="this.style.color='${accentColor}'" onmouseout="this.style.color='${done?'var(--muted)':'var(--text)'}'">
+          ${item.title}
+        </a>
+        <span style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">↗</span>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="phase-header" onclick="this.parentElement.classList.toggle('open')" style="border-left:3px solid ${accentColor}22;">
+        <div class="phase-num" style="background:${accentColor}22;color:${accentColor};font-size:11px;width:auto;padding:0 10px;border-radius:6px;">${groupDone}/${items.length}</div>
+        <div>
+          <div class="phase-title">${group}</div>
+        </div>
+        <div class="phase-progress-wrap">
+          <div style="width:80px;height:4px;background:var(--border);border-radius:10px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${accentColor};border-radius:10px;transition:width 0.5s;"></div>
+          </div>
+          <span class="phase-pct">${pct}%</span>
+          <span class="phase-chevron">▼</span>
+        </div>
+      </div>
+      <div class="phase-body">${itemsHtml}</div>`;
+    containerEl.appendChild(card);
+  });
+  return { totalDone, total };
+}
+
+function renderSdAll() {
+  const caseStats = renderSdSection(document.getElementById('sd-case-container'), SD_CASE_STUDIES, 'case', '#e879f9');
+  const fundStats = renderSdSection(document.getElementById('sd-fund-container'), SD_FUNDAMENTALS, 'fund', '#38bdf8');
+  const intStats = renderSdSection(document.getElementById('sd-int-container'), SD_INTERVIEW, 'int', '#a3e635');
+  const wpStats = renderSdSection(document.getElementById('sd-wp-container'), SD_WHITE_PAPERS, 'wp', '#fb923c');
+
+  // Update overview stats and progress bars
+  const setBar = (statId, labelId, barId, done, total, color) => {
+    if (document.getElementById(statId)) document.getElementById(statId).textContent = done;
+    if (document.getElementById(labelId)) document.getElementById(labelId).textContent = `${done} / ${total} read`;
+    if (document.getElementById(barId)) document.getElementById(barId).style.width = total ? (done/total*100)+'%' : '0%';
+  };
+  setBar('sd-stat-case','sd-case-progress-label','sd-case-bar', caseStats.totalDone, caseStats.total, '#e879f9');
+  setBar('sd-stat-fund','sd-fund-progress-label','sd-fund-bar', fundStats.totalDone, fundStats.total, '#38bdf8');
+  document.getElementById('sd-int-progress-label') && (document.getElementById('sd-int-progress-label').textContent = `${intStats.totalDone} / ${intStats.total} done`);
+  document.getElementById('sd-stat-int') && (document.getElementById('sd-stat-int').textContent = intStats.totalDone);
+  document.getElementById('sd-int-bar') && (document.getElementById('sd-int-bar').style.width = intStats.total ? (intStats.totalDone/intStats.total*100)+'%' : '0%');
+  document.getElementById('sd-wp-progress-label') && (document.getElementById('sd-wp-progress-label').textContent = `${wpStats.totalDone} / ${wpStats.total} read`);
+  document.getElementById('sd-stat-wp') && (document.getElementById('sd-stat-wp').textContent = wpStats.totalDone);
+  document.getElementById('sd-wp-bar') && (document.getElementById('sd-wp-bar').style.width = wpStats.total ? (wpStats.totalDone/wpStats.total*100)+'%' : '0%');
+
+  return caseStats.totalDone + fundStats.totalDone + intStats.totalDone + wpStats.totalDone;
+}
+
+// ===================== BOOT =====================
+loadState();
+loadSdState();
+renderRoadmap();
+renderDashboard();
+renderWeekly();
+renderVault();
+renderExperiments();
+renderProjects();
+renderSrs();
+renderSdAll();
+</script>
+</body>
+</html>
