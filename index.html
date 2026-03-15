@@ -2,236 +2,412 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate GenAI & Agentic AI Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Master Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f172a; --bg-card: #1e293b; --bg-hover: #334155;
-    --text: #f8fafc; --text-muted: #94a3b8;
-    --accent: #3b82f6; --accent-hover: #2563eb;
-    --success: #10b981; --warning: #f59e0b;
-    --border: #334155;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-  
-  /* Sidebar */
-  .sidebar { width: 260px; background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; }
-  .logo { font-size: 1.2rem; font-weight: 700; padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 10px; color: var(--text); letter-spacing: 0.5px; }
-  .nav-btn { background: none; border: none; color: var(--text-muted); text-align: left; padding: 12px 20px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 10px; }
-  .nav-btn:hover { background: var(--bg-hover); color: var(--text); }
-  .nav-btn.active { background: var(--bg-hover); border-left-color: var(--accent); color: var(--text); font-weight: 500; }
-  
-  /* Main Content */
-  .main { flex: 1; padding: 40px; overflow-y: auto; scroll-behavior: smooth; }
-  .page { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease; }
-  .page.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-  
-  h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
-  .subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; }
-  h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 16px; color: #e2e8f0; }
-  
-  /* Cards */
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-  .tag { display: inline-block; padding: 4px 10px; background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
-  
-  /* Lists & Text */
-  ul { margin-left: 20px; color: #cbd5e1; margin-bottom: 20px; }
-  li { margin-bottom: 8px; line-height: 1.6; }
-  
-  /* Mind Castle Section */
-  .mind-castle-box { background: #0f172a; border: 1px dashed #475569; border-radius: 8px; padding: 16px; margin-bottom: 20px; display: flex; gap: 20px; align-items: center; }
-  .mind-castle-img { width: 120px; height: 120px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; text-align: center; border: 1px solid #334155; object-fit: cover; }
-  .mind-castle-text { flex: 1; }
-  .mind-castle-text h3 { font-size: 1rem; margin-bottom: 8px; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
-  
-  /* Buttons */
-  .btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
-  .btn:hover { background: var(--accent-hover); }
-  .btn-success { background: var(--success); }
-  .btn-success:hover { background: #059669; }
-  
-  /* Tables */
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-  th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
-  
-  /* SRS Alert Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-  .modal { background: var(--bg-card); padding: 30px; border-radius: 12px; border: 1px solid var(--border); max-width: 400px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-  .modal h2 { color: var(--warning); margin-bottom: 10px; }
-  .modal p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+:root{
+  --ink:#1a1814;--ink2:#2d2a24;--ink3:#4a4540;
+  --warm:#f5f0e8;--warm2:#ede8de;--warm3:#e0d9cc;
+  --panel:#faf7f2;--card:#ffffff;--border:#ddd8cf;--border2:#c8c2b8;
+  --gold:#c9a96e;--gold2:#a8894e;
+  --sage:#8b9e83;--blue:#7a9eb5;--terra:#b8876b;--plum:#9b8ab4;--forest:#6b8f71;--mocha:#a08060;
+  --muted:#9a9288;--muted2:#b8b2a8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.6;display:flex;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.4;}
+
+/* SIDEBAR */
+.sidebar{width:256px;min-width:256px;background:var(--ink);color:var(--warm);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:100;}
+.sb-logo{padding:32px 28px 24px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sb-logotype{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--warm);letter-spacing:3px;text-transform:uppercase;display:block;}
+.sb-logotype em{font-style:italic;color:var(--gold);}
+.sb-tagline{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-top:6px;display:block;text-transform:uppercase;}
+.sb-level{margin:20px 20px 0;padding:16px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;}
+.sb-lv-tag{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;}
+.sb-lv-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--gold);margin:4px 0 10px;letter-spacing:1px;}
+.sb-bar{height:2px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;}
+.sb-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 0.8s ease;}
+.sb-lv-pct{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;display:block;}
+.sb-section{padding:0 12px;margin-top:20px;}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 16px;border:none;background:none;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;border-radius:6px;transition:all 0.18s;text-align:left;position:relative;}
+.nav-btn:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8);}
+.nav-btn.active{background:rgba(201,169,110,0.14);color:var(--gold);}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:60%;background:var(--gold);border-radius:2px;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:48px 56px;max-width:1160px;position:relative;z-index:1;}
+.pg-eyebrow{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.pg-eyebrow::before{content:'';width:20px;height:1px;background:var(--border2);}
+.pg-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--ink);line-height:1.1;letter-spacing:-0.5px;margin-bottom:10px;}
+.pg-title em{font-style:italic;color:var(--gold2);}
+.pg-sub{font-size:14px;color:var(--muted);max-width:600px;line-height:1.7;margin-bottom:40px;}
+.page{display:none; animation: fadeIn 0.4s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* QUOTE CAROUSEL */
+.carousel-card{background:var(--ink);border-radius:14px;padding:32px 36px;margin-bottom:32px;overflow:hidden;position:relative;}
+.slide-quote{position:relative;}
+.q-mark{font-family:'Cormorant Garamond',serif;font-size:100px;color:rgba(201,169,110,0.1);position:absolute;top:-18px;left:-6px;line-height:1;pointer-events:none;}
+.q-text{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:300;font-style:italic;color:var(--warm);line-height:1.55;position:relative;z-index:1;margin-bottom:14px;max-width:700px;}
+.q-author{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1;}
+
+/* CARDS & UI ELEMENTS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:16px;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:4px;}
+.card-sub{font-size:12px;color:var(--muted);margin-bottom:20px;font-family:'DM Mono',monospace;}
+
+.phase-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;transition:box-shadow 0.2s;}
+.phase-hdr{display:flex;align-items:center;gap:16px;padding:20px 28px;}
+.phase-badge{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0;border:1px solid;background:var(--warm);}
+.phase-info{flex:1;}
+.phase-t{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.phase-s{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.3px;}
+.phase-body{padding:0 28px 28px; border-top:1px solid var(--border); margin-top: 10px; padding-top: 20px;}
+.phase-body ul { margin-left: 20px; color: var(--ink3); font-size: 13.5px; margin-bottom: 20px; }
+.phase-body li { margin-bottom: 6px; }
+
+/* MIND CASTLE BOX */
+.mc-box{margin-top:20px;border:1px solid var(--border);border-radius:10px;padding:20px;background:var(--panel);display:flex;gap:20px;align-items:center;}
+.mc-img{width:110px;height:110px;border-radius:8px;object-fit:cover;border:1px solid var(--border2);background:var(--warm2); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); text-align:center;}
+.mc-text{flex:1;}
+.mc-text h4{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--ink);margin-bottom:6px;}
+.mc-text p{font-size:13px;color:var(--ink3);line-height:1.6;}
+
+/* BUTTONS */
+.action-btn{padding:8px 18px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px;cursor:pointer;border:1px solid var(--gold);background:rgba(201,169,110,0.1);color:var(--gold2);transition:all 0.2s;}
+.action-btn:hover{background:var(--gold);color:white;}
+.action-btn.done{background:var(--sage);border-color:var(--sage);color:white;}
+
+/* PROJECT BOX */
+.proj-box{border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--panel);margin-bottom:16px;}
+.proj-eyebrow{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px; color:var(--gold2);}
+.proj-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--ink);margin-bottom:10px;}
+.proj-desc{font-size:13.5px;color:var(--ink3);line-height:1.65;margin-bottom:14px;}
+.proj-tag{font-family:'DM Mono',monospace;font-size:9px;padding:3px 9px;border-radius:3px;letter-spacing:0.5px;background:var(--card);border:1px solid var(--border);color:var(--muted); margin-right: 5px;}
+
+/* TABLES */
+.srs-table{width:100%;border-collapse:collapse;}
+.srs-table th{text-align:left;padding:12px 14px;font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);background:var(--panel);}
+.srs-table td{padding:14px;border-bottom:1px solid var(--border); font-size: 13.5px;}
+
+/* ELEGANT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,24,20,0.8);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(3px); animation: fadeIn 0.3s ease;}
+.modal-card{background:var(--card);border:1px solid var(--gold);border-radius:14px;padding:40px;max-width:450px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.2); position:relative; overflow:hidden;}
+.modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.modal-icon{font-size:40px; margin-bottom:10px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--ink);margin-bottom:12px;line-height:1.1;}
+.modal-desc{font-size:14px;color:var(--ink3);margin-bottom:24px;line-height:1.6;}
+
+/* 3-STEP REVIEW GRID */
+.step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+.step-icon{font-size:24px;margin-bottom:10px;}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:6px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.5;}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="logo">🧠 AI Master Hub</div>
-  <button class="nav-btn active" onclick="nav('roadmap')">📚 GenAI Roadmap</button>
-  <button class="nav-btn" onclick="nav('projects')">🚀 Real Projects</button>
-  <button class="nav-btn" onclick="nav('pluralsight')">▶️ Pluralsight Plan</button>
-  <button class="nav-btn" onclick="nav('srs')">🔄 Spaced Repetition</button>
-</div>
+<nav class="sidebar">
+  <div class="sb-logo">
+    <span class="sb-logotype">Path<em>finder</em></span>
+    <span class="sb-tagline">AI Master Hub</span>
+  </div>
+  
+  <div class="sb-level">
+    <div class="sb-lv-tag">Course Progress</div>
+    <div class="sb-lv-name" id="progress-text">Novice</div>
+    <div class="sb-bar"><div class="sb-bar-fill" id="progress-bar" style="width:0%"></div></div>
+    <span class="sb-lv-pct" id="progress-pct">0% Completed</span>
+  </div>
+
+  <div class="sb-section">
+    <button class="nav-btn active" onclick="show('roadmap', this)">◈ GenAI Roadmap</button>
+    <button class="nav-btn" onclick="show('projects', this)">◉ Interview Projects</button>
+    <button class="nav-btn" onclick="show('pluralsight', this)">◎ Pluralsight Plan</button>
+    <button class="nav-btn" onclick="show('srs', this)">↻ Spaced Repetition</button>
+  </div>
+</nav>
 
 <div class="main">
 
   <div id="page-roadmap" class="page active">
-    <h1>GenAI & Agentic AI Roadmap</h1>
-    <div class="subtitle">Master the architecture. Attach a Mind Castle image to each concept.</div>
-    
-    <div class="card">
-      <div class="card-header">
-        <h2>Phase 1: Generative Foundations & APIs</h2>
-        <span class="tag">Basics</span>
+    <div class="pg-eyebrow">The Architecture</div>
+    <div class="pg-title">GenAI & Agentic <em>Roadmap</em></div>
+    <div class="pg-sub">Master the core concepts. Attach your Mind Castle image to each phase to lock the architecture into your spatial memory.</div>
+
+    <div class="carousel-card">
+      <div class="slide-quote">
+        <div class="q-mark">&#8220;</div>
+        <div class="q-text">An investment in knowledge pays the best interest. Build the mental architecture first, and the code will flow naturally.</div>
+        <div class="q-author">— Benjamin Franklin</div>
       </div>
-      <ul>
-        <li>Understanding LLM APIs (Hugging Face, Gemini, OpenAI)</li>
-        <li>Tokens, Temperature, and Context Windows</li>
-        <li>Streaming outputs to a Frontend (SSE)</li>
-      </ul>
-      
-      <div class="mind-castle-box">
-        <img src="https://via.placeholder.com/150/1e293b/94a3b8?text=Add+Image" alt="Mind Castle" class="mind-castle-img">
-        <div class="mind-castle-text">
-          <h3>🏰 Mind Castle Memory</h3>
-          <p style="font-size: 0.9rem; color: #cbd5e1;">Visualize a <strong>Toll Booth</strong>. The tokens are coins you pay. The window size is how many cars fit in the lane. Temperature is how wildly the cars drive.</p>
-        </div>
-      </div>
-      <button class="btn" onclick="markLearned('Phase 1: APIs & Tokens')">Mark as Learned</button>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2>Phase 2: Advanced Prompting & Structured Output</h2>
-        <span class="tag">Engineering</span>
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--muted);border-color:var(--border2);">0</div>
+        <div class="phase-info">
+          <div class="phase-t">Math & Classic ML Baseline</div>
+          <div class="phase-s">The mathematical foundation of all AI</div>
+        </div>
+        <button class="action-btn" id="btn-0" onclick="markLearned('Math & Classic ML', 0)">Mark as Learned</button>
       </div>
-      <ul>
-        <li>Chain-of-Thought & Few-Shot prompting for logic</li>
-        <li>Forcing strictly typed JSON outputs for React frontends</li>
-        <li>Handling Hallucinations & Guardrails</li>
-      </ul>
-      
-      <div class="mind-castle-box">
-        <img src="https://via.placeholder.com/150/1e293b/94a3b8?text=Add+Image" alt="Mind Castle" class="mind-castle-img">
-        <div class="mind-castle-text">
-          <h3>🏰 Mind Castle Memory</h3>
-          <p style="font-size: 0.9rem; color: #cbd5e1;">Visualize a <strong>Sorting Factory</strong>. Raw thoughts go into a mold (JSON Schema) and come out as perfectly shaped Lego blocks ready for React.</p>
+      <div class="phase-body">
+        <ul>
+          <li>Linear Algebra & Statistics Basics</li>
+          <li>Data Manipulation (Pandas, NumPy)</li>
+          <li>Classic ML (Scikit-Learn, Classification vs Regression)</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 0" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Stone Foundation</h4>
+            <p>Visualize geometric grids glowing in the ground, organizing chaotic raw data into perfect rows and columns before building the tower upward.</p>
+          </div>
         </div>
       </div>
-      <button class="btn" onclick="markLearned('Phase 2: Structured Prompts')">Mark as Learned</button>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2>Phase 3: Embeddings, Vector DBs & RAG</h2>
-        <span class="tag">Architecture</span>
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--gold);border-color:rgba(201,169,110,0.3);">1</div>
+        <div class="phase-info">
+          <div class="phase-t">Generative Foundations & APIs</div>
+          <div class="phase-s">Understanding how the engines actually work</div>
+        </div>
+        <button class="action-btn" id="btn-1" onclick="markLearned('Generative Foundations', 1)">Mark as Learned</button>
       </div>
-      <ul>
-        <li>Converting text to math (Embeddings)</li>
-        <li>Storing data in ChromaDB / Pinecone</li>
-        <li>RAG: Retrieval-Augmented Generation (Chat with your data)</li>
-      </ul>
-      
-      <div class="mind-castle-box">
-        <img src="https://via.placeholder.com/150/1e293b/94a3b8?text=Add+Image" alt="Mind Castle" class="mind-castle-img">
-        <div class="mind-castle-text">
-          <h3>🏰 Mind Castle Memory</h3>
-          <p style="font-size: 0.9rem; color: #cbd5e1;">Visualize a <strong>Massive Library</strong>. The librarian (Embedder) gives every book a GPS coordinate based on its meaning, so you can find concepts instantly.</p>
+      <div class="phase-body">
+        <ul>
+          <li>Understanding LLM APIs (Hugging Face, Gemini, OpenAI)</li>
+          <li>Tokens, Temperature, and Context Windows</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 1" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Neon Toll Booth</h4>
+            <p>Visualize a toll booth. The tokens are coins you pay. The window size is how many cars fit in the lane. Temperature dictates how wildly the cars drive through.</p>
+          </div>
         </div>
       </div>
-      <button class="btn" onclick="markLearned('Phase 3: RAG Architecture')">Mark as Learned</button>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2>Phase 4: Agentic AI & LangGraph</h2>
-        <span class="tag">Advanced</span>
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--sage);border-color:rgba(139,158,131,0.3);">2</div>
+        <div class="phase-info">
+          <div class="phase-t">Prompt Engineering & Structured Output</div>
+          <div class="phase-s">Forcing raw intelligence into usable formats</div>
+        </div>
+        <button class="action-btn" id="btn-2" onclick="markLearned('Prompt Engineering', 2)">Mark as Learned</button>
       </div>
-      <ul>
-        <li>The ReAct Loop (Thought -> Action -> Observation)</li>
-        <li>Giving AI tools (Web Search, Code Execution)</li>
-        <li>Building stateful, autonomous agents with LangGraph</li>
-      </ul>
-      
-      <div class="mind-castle-box">
-        <img src="https://via.placeholder.com/150/1e293b/94a3b8?text=Add+Image" alt="Mind Castle" class="mind-castle-img">
-        <div class="mind-castle-text">
-          <h3>🏰 Mind Castle Memory</h3>
-          <p style="font-size: 0.9rem; color: #cbd5e1;">Visualize a <strong>Robot with a Toolbelt</strong>. It looks at a task, pulls out a magnifying glass (Search), then pulls out a wrench (Code), and loops until the job is done.</p>
+      <div class="phase-body">
+        <ul>
+          <li>Chain-of-Thought & Few-Shot prompting for logic</li>
+          <li>Forcing strictly typed JSON outputs for React frontends</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 2" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Sorting Factory</h4>
+            <p>Visualize chaotic floating energy being pressed into perfect, glowing geometric golden molds (JSON Schema) and coming out as structured blocks ready for UI.</p>
+          </div>
         </div>
       </div>
-      <button class="btn" onclick="markLearned('Phase 4: Agentic AI')">Mark as Learned</button>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--blue);border-color:rgba(122,158,181,0.3);">3</div>
+        <div class="phase-info">
+          <div class="phase-t">Embeddings, Vector DBs & RAG</div>
+          <div class="phase-s">Giving AI access to private knowledge</div>
+        </div>
+        <button class="action-btn" id="btn-3" onclick="markLearned('RAG & Embeddings', 3)">Mark as Learned</button>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>Converting text to math (Embeddings)</li>
+          <li>Storing data in ChromaDB / Pinecone</li>
+          <li>Retrieval-Augmented Generation Architecture</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 3" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Infinite Library</h4>
+            <p>Visualize a magical futuristic library. A robotic librarian gives every book a GPS coordinate based on its meaning, allowing you to search by concept instantly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--terra);border-color:rgba(184,135,107,0.3);">4</div>
+        <div class="phase-info">
+          <div class="phase-t">Agentic AI & LangGraph</div>
+          <div class="phase-s">AI that plans, acts, and loops</div>
+        </div>
+        <button class="action-btn" id="btn-4" onclick="markLearned('Agentic AI', 4)">Mark as Learned</button>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>The ReAct Loop (Thought -> Action -> Observation)</li>
+          <li>Building stateful, autonomous agents with LangGraph</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 4" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Robot with a Toolbelt</h4>
+            <p>Visualize an autonomous robot at a workbench. It pulls out a magnifying glass (Search), then a wrench (Code), observing the results and looping until the job is done.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--plum);border-color:rgba(155,138,180,0.3);">5</div>
+        <div class="phase-info">
+          <div class="phase-t">Frontend AI & UI/UX</div>
+          <div class="phase-s">Connecting the AI brain to human interfaces</div>
+        </div>
+        <button class="action-btn" id="btn-5" onclick="markLearned('Frontend AI', 5)">Mark as Learned</button>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>Streaming Markdown & Server-Sent Events (SSE) in React</li>
+          <li>Building Interactive Generative Artifacts (like Claude UI)</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 5" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Digital Printing Press</h4>
+            <p>Visualize data streaming in character by character, stamping glowing text rapidly onto a seamless holographic glass display that a human interacts with.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-hdr">
+        <div class="phase-badge" style="color:var(--forest);border-color:rgba(107,143,113,0.3);">6</div>
+        <div class="phase-info">
+          <div class="phase-t">AI System Design & LLMOps</div>
+          <div class="phase-s">Scaling and protecting production AI</div>
+        </div>
+        <button class="action-btn" id="btn-6" onclick="markLearned('AI System Design', 6)">Mark as Learned</button>
+      </div>
+      <div class="phase-body">
+        <ul>
+          <li>GPU vs CPU Routing & Latency Optimization</li>
+          <li>Semantic Caching (GPTCache) to reduce API costs</li>
+          <li>Rate Limiting, Guardrails, and Tracing (LangSmith)</li>
+        </ul>
+        <div class="mc-box">
+          <img src="" alt="Mind Castle 6" class="mc-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div style="display:none; width:110px; height:110px; border-radius:8px; border:1px solid var(--border2); background:var(--warm2); align-items:center; justify-content:center; font-family:'DM Mono'; font-size:9px; color:var(--muted); text-align:center;">ADD IMAGE<br>HERE</div>
+          <div class="mc-text">
+            <h4>🏰 Mind Castle: The Traffic Control Tower</h4>
+            <p>Visualize routing fast lanes to powerful GPUs, caching identical cars to save fuel, and heavy security blocking malicious vehicles at the system border.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div id="page-projects" class="page">
-    <h1>Real-World Projects</h1>
-    <div class="subtitle">Production-grade builds. React Frontend + Python Backend + AI APIs.</div>
+    <div class="pg-eyebrow">Practical Application</div>
+    <div class="pg-title">Enterprise <em>Take-Homes</em></div>
+    <div class="pg-sub">Designed to mimic real AI Engineering interview assignments. Build these to prove you can execute.</div>
     
-    <div class="card">
-      <div class="card-header"><h2>1. AI Creative Studio</h2><span class="tag">React + FastAPI</span></div>
-      <p style="color: #cbd5e1; margin-bottom: 10px;"><strong>Goal:</strong> Build a UI where users generate images and convert text to speech.</p>
-      <ul>
-        <li><strong>Frontend:</strong> React + TailwindCSS.</li>
-        <li><strong>Backend:</strong> FastAPI server calling Hugging Face Free Inference API.</li>
-        <li><strong>AI Tools:</strong> Stable Diffusion (Images) + Whisper/TTS (Voice).</li>
-      </ul>
+    <div class="proj-box">
+      <div class="proj-eyebrow">Project 1</div>
+      <div class="proj-name">The Context Parser Challenge</div>
+      <div style="margin-bottom: 10px;">
+        <span class="proj-tag">REACT</span> <span class="proj-tag">GEMINI API</span>
+      </div>
+      <div class="proj-desc"><strong>Scenario:</strong> A startup needs a tool where users paste React code and get a JSON bug report back. Requires strict JSON output prompting and a React frontend that parses the JSON natively.</div>
     </div>
 
-    <div class="card">
-      <div class="card-header"><h2>2. AI Code Reviewer</h2><span class="tag">React + Gemini</span></div>
-      <p style="color: #cbd5e1; margin-bottom: 10px;"><strong>Goal:</strong> Paste code, get a strict JSON payload back highlighting bugs and fixes.</p>
-      <ul>
-        <li><strong>Focus:</strong> Structured Output Prompting. Forcing the AI to reply ONLY in JSON so React can map the data to UI components.</li>
-      </ul>
+    <div class="proj-box">
+      <div class="proj-eyebrow">Project 2</div>
+      <div class="proj-name">The Internal Knowledge Engine</div>
+      <div style="margin-bottom: 10px;">
+        <span class="proj-tag">LANGCHAIN</span> <span class="proj-tag">CHROMADB</span>
+      </div>
+      <div class="proj-desc"><strong>Scenario:</strong> HR wants employees to chat with the 500-page employee handbook. Build a RAG system that cites the exact page number of the PDF and includes a "Hallucination Check" routing step.</div>
     </div>
 
-    <div class="card">
-      <div class="card-header"><h2>3. The PDF Brain (RAG)</h2><span class="tag">LangChain + Chroma</span></div>
-      <p style="color: #cbd5e1; margin-bottom: 10px;"><strong>Goal:</strong> Upload a PDF and chat with it. System must show citations.</p>
-      <ul>
-        <li><strong>Architecture:</strong> Python chunks the PDF -> Embeds via HuggingFace -> Stores in local ChromaDB -> LangChain orchestrates the retrieval.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><h2>4. Autonomous Web Researcher</h2><span class="tag">LangGraph Agent</span></div>
-      <p style="color: #cbd5e1; margin-bottom: 10px;"><strong>Goal:</strong> Ask a question. Agent searches live internet, reads sites, and writes a report.</p>
-      <ul>
-        <li><strong>Tools:</strong> Tavily Search API (Free).</li>
-        <li><strong>Flow:</strong> LangGraph state machine ensures the agent loops until it finds enough high-quality data before generating the final report.</li>
-      </ul>
+    <div class="proj-box">
+      <div class="proj-eyebrow">Project 3</div>
+      <div class="proj-name">The Market Researcher Agent</div>
+      <div style="margin-bottom: 10px;">
+        <span class="proj-tag">LANGGRAPH</span> <span class="proj-tag">TAVILY</span>
+      </div>
+      <div class="proj-desc"><strong>Scenario:</strong> Investment firm needs an autonomous agent to research competitors. The agent must search the live web, read a minimum of 3 sources, and compile a Markdown report without human intervention.</div>
     </div>
   </div>
 
   <div id="page-pluralsight" class="page">
-    <h1>Pluralsight Learning Path</h1>
-    <div class="subtitle">Use your free access to master the theories behind your projects.</div>
-    <div class="card">
-      <table>
-        <thead><tr><th>Course Name</th><th>Maps To</th></tr></thead>
+    <div class="pg-eyebrow">External Resources</div>
+    <div class="pg-title">Pluralsight <em>Integration</em></div>
+    <div class="pg-sub">Use your free access to master the underlying theories before building the projects.</div>
+    
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table class="srs-table">
+        <thead><tr><th>Pluralsight Course Name</th><th>Roadmap Alignment</th></tr></thead>
         <tbody>
-          <tr><td>Python Essentials & Core Data Structures</td><td>Backend Foundations</td></tr>
-          <tr><td>Introduction to Generative AI</td><td>Phase 1 (Basics)</td></tr>
-          <tr><td>Prompt Engineering for Web Developers</td><td>Phase 2 & Project 2</td></tr>
-          <tr><td>Vector Databases and Embeddings for Developers</td><td>Phase 3 & Project 3</td></tr>
-          <tr><td>Generative AI for Developers - Agentic AI</td><td>Phase 4 & Project 4</td></tr>
+          <tr><td>Data Science with Python: Foundations of ML</td><td>Phase 0</td></tr>
+          <tr><td>Introduction to Generative AI</td><td>Phase 1</td></tr>
+          <tr><td>Prompt Engineering for Web Developers</td><td>Phase 2</td></tr>
+          <tr><td>Vector Databases and Embeddings for Developers</td><td>Phase 3</td></tr>
+          <tr><td>Generative AI for Developers - Agentic AI</td><td>Phase 4</td></tr>
+          <tr><td>Machine Learning Operations (MLOps): Getting Started</td><td>Phase 6</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
   <div id="page-srs" class="page">
-    <h1>Spaced Repetition Tracker</h1>
-    <div class="subtitle">Reviewing after 3 days commits the Mind Castle to long-term memory.</div>
-    <div class="card">
-      <table>
-        <thead><tr><th>Topic</th><th>Next Review Date</th><th>Action</th></tr></thead>
-        <tbody id="srs-body">
-          </tbody>
+    <div class="pg-eyebrow">Retention System</div>
+    <div class="pg-title">Spaced <em>Repetition</em></div>
+    <div class="pg-sub">Reviewing a topic 3 days after learning it permanently commits the architecture to your long-term memory.</div>
+    
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-icon">📖</div>
+        <div class="step-title">Step 1 — Read</div>
+        <div class="step-desc">Close your eyes and walk through the Mind Castle imagery for the topic.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🗣️</div>
+        <div class="step-title">Step 2 — Explain</div>
+        <div class="step-desc">Explain the architecture aloud as if teaching a junior developer.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">💻</div>
+        <div class="step-title">Step 3 — Code</div>
+        <div class="step-desc">Write the core function (e.g., the API call or embedding function) from memory.</div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table class="srs-table">
+        <thead><tr><th>Topic</th><th>Next Review Date</th><th>Status / Action</th></tr></thead>
+        <tbody id="srs-body"></tbody>
       </table>
     </div>
   </div>
@@ -239,50 +415,77 @@
 </div>
 
 <div class="modal-overlay" id="srs-modal">
-  <div class="modal">
-    <h2>🧠 Memory Review Due!</h2>
-    <p>You have topics ready for Spaced Repetition today. Walking through your Mind Castle now will lock this into your long-term memory.</p>
-    <button class="btn btn-success" onclick="closeModal()" style="width: 100%;">Go to SRS Tracker</button>
+  <div class="modal-card">
+    <div class="modal-icon">🏰</div>
+    <h2 class="modal-title">Memory Review Due</h2>
+    <p class="modal-desc">You have topics ready for Spaced Repetition today. Walking through your Mind Castle now will lock this architecture into your long-term memory.</p>
+    <button class="action-btn" style="width:100%; font-size:14px; padding:12px;" onclick="closeModal()">Enter Spaced Repetition</button>
   </div>
 </div>
 
 <script>
-  // --- Navigation ---
-  function nav(pageId) {
+  const TOTAL_PHASES = 7;
+
+  function show(pageId, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
-    event.target.classList.add('active');
+    btn.classList.add('active');
     if(pageId === 'srs') renderSRS();
   }
 
-  // --- Spaced Repetition Logic ---
-  let srsData = JSON.parse(localStorage.getItem('ai_mindcastle_srs')) || [];
+  let srsData = JSON.parse(localStorage.getItem('ai_pathfinder_srs')) || [];
 
-  function markLearned(topicName) {
-    if (srsData.find(t => t.name === topicName)) {
-      alert("You have already added this to your Spaced Repetition tracker.");
-      return;
-    }
-    // Set due date to 3 days from now
+  function updateProgress() {
+    const uniqueLearned = new Set(srsData.map(t => t.phaseId)).size;
+    const pct = Math.round((uniqueLearned / TOTAL_PHASES) * 100);
+    
+    document.getElementById('progress-pct').innerText = `${pct}% Completed`;
+    document.getElementById('progress-bar').style.width = `${pct}%`;
+
+    // Levels mapping
+    let level = "Novice";
+    if(pct >= 20) level = "Learner";
+    if(pct >= 50) level = "Builder";
+    if(pct >= 80) level = "Engineer";
+    if(pct === 100) level = "Architect";
+    document.getElementById('progress-text').innerText = level;
+
+    // Mark buttons as done visually
+    srsData.forEach(item => {
+      const btn = document.getElementById(`btn-${item.phaseId}`);
+      if(btn) {
+        btn.innerText = "Learned ✓";
+        btn.classList.add("done");
+        btn.disabled = true;
+      }
+    });
+  }
+
+  function markLearned(topicName, phaseId) {
+    if (srsData.find(t => t.phaseId === phaseId)) return;
+
     let dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 3);
 
-    srsData.push({ name: topicName, due: dueDate.toISOString().split('T')[0] });
-    localStorage.setItem('ai_mindcastle_srs', JSON.stringify(srsData));
+    srsData.push({ name: topicName, phaseId: phaseId, due: dueDate.toISOString().split('T')[0] });
+    localStorage.setItem('ai_pathfinder_srs', JSON.stringify(srsData));
     
-    alert(`Added to Memory Tracker! You will get a popup to review "${topicName}" in 3 days.`);
-    renderSRS();
+    updateProgress();
+    
+    // Custom Toast/Alert
+    const btn = document.getElementById(`btn-${phaseId}`);
+    const originalText = btn.innerText;
+    btn.innerText = "Added to Tracker!";
+    btn.classList.add("done");
+    setTimeout(() => { btn.innerText = "Learned ✓"; }, 2000);
   }
 
   function reviewTopic(index) {
-    // Push next review 7 days into the future
     let nextDue = new Date();
     nextDue.setDate(nextDue.getDate() + 7);
     srsData[index].due = nextDue.toISOString().split('T')[0];
-    localStorage.setItem('ai_mindcastle_srs', JSON.stringify(srsData));
-    
-    alert("Mind Castle Reviewed! Next check-in is in 7 days.");
+    localStorage.setItem('ai_pathfinder_srs', JSON.stringify(srsData));
     renderSRS();
   }
 
@@ -293,19 +496,19 @@
 
     srsData.forEach((item, index) => {
       const isDue = item.due <= today;
-      const statusText = isDue ? '<span style="color: var(--warning); font-weight: 600;">Due Now</span>' : '<span style="color: var(--text-muted);">Scheduled</span>';
+      const statusText = isDue ? `<span style="color:var(--terra); font-weight:600;">Due Now</span>` : `<span style="color:var(--muted);">Scheduled</span>`;
       const actionBtn = isDue 
-        ? `<button class="btn btn-success" onclick="reviewTopic(${index})">Review Mind Castle</button>`
-        : `<button class="btn" style="opacity: 0.5; cursor: not-allowed;" disabled>Wait</button>`;
+        ? `<button class="action-btn" onclick="reviewTopic(${index})">Review Complete ✓</button>`
+        : `<button class="action-btn" style="opacity: 0.5; cursor: not-allowed;" disabled>Wait</button>`;
 
       html += `<tr>
-          <td><strong>${item.name}</strong></td>
-          <td>${item.due}</td>
+          <td style="color:var(--ink); font-weight:500;">${item.name}</td>
+          <td style="font-family:'DM Mono'; font-size:12px;">${item.due}</td>
           <td style="display:flex; gap:15px; align-items:center;">${statusText} ${actionBtn}</td>
         </tr>`;
     });
 
-    tbody.innerHTML = html || '<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">No topics added yet. Click "Mark as Learned" on the roadmap.</td></tr>';
+    tbody.innerHTML = html || `<tr><td colspan="3" style="text-align:center; padding:30px; color:var(--muted);">No topics learned yet. Click "Mark as Learned" on the roadmap.</td></tr>`;
   }
 
   function checkReminders() {
@@ -318,14 +521,13 @@
 
   function closeModal() {
     document.getElementById('srs-modal').style.display = 'none';
-    nav('srs');
-    // Find the SRS nav button and set it active visually
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.nav-btn')[3].classList.add('active'); 
+    const srsBtn = document.querySelectorAll('.nav-btn')[3];
+    show('srs', srsBtn);
   }
 
-  // --- Initialize ---
   window.onload = () => {
+    updateProgress();
     renderSRS();
     checkReminders();
   };
