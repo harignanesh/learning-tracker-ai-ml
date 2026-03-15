@@ -4,55 +4,111 @@
 
 <title>AI Learning OS</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
 font-family:Inter;
-background:#0f172a;
+background:linear-gradient(135deg,#0f172a,#020617);
 color:white;
 margin:0;
 display:flex;
+overflow:hidden;
 }
 
 .sidebar{
-width:250px;
-background:#1e293b;
+width:260px;
+background:rgba(30,41,59,0.8);
+backdrop-filter:blur(10px);
 padding:20px;
 height:100vh;
+box-shadow:0 0 40px rgba(0,0,0,0.4);
+}
+
+.sidebar h2{
+margin-bottom:20px;
 }
 
 .sidebar button{
 width:100%;
-padding:10px;
-margin-bottom:10px;
+padding:12px;
+margin-bottom:12px;
 background:#334155;
 border:none;
+border-radius:8px;
 color:white;
 cursor:pointer;
+transition:0.3s;
+}
+
+.sidebar button:hover{
+background:#3b82f6;
+transform:translateX(5px);
 }
 
 .main{
 flex:1;
-padding:30px;
+padding:40px;
+overflow:auto;
 }
 
-.card{
-background:#1e293b;
+.hero{
+margin-bottom:40px;
+}
+
+.quote{
+background:rgba(30,41,59,0.6);
 padding:20px;
-border-radius:10px;
-margin-bottom:20px;
+border-radius:12px;
+margin-top:15px;
+backdrop-filter:blur(6px);
 }
 
 .grid{
 display:grid;
-grid-template-columns:1fr 1fr;
+grid-template-columns:repeat(4,1fr);
 gap:20px;
 }
 
-.hero{
-margin-bottom:30px;
+.card{
+background:rgba(30,41,59,0.7);
+padding:25px;
+border-radius:14px;
+transition:0.4s;
+box-shadow:0 0 25px rgba(0,0,0,0.3);
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 20px 40px rgba(0,0,0,0.6);
+}
+
+.progressbar{
+height:12px;
+background:#1e293b;
+border-radius:10px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.progress{
+height:12px;
+background:linear-gradient(90deg,#3b82f6,#06b6d4);
+width:60%;
+animation:progress 2s ease;
+}
+
+@keyframes progress{
+from{width:0}
+to{width:60%}
+}
+
+canvas{
+background:#0f172a;
+border-radius:12px;
+padding:10px;
 }
 
 </style>
@@ -77,15 +133,12 @@ margin-bottom:30px;
 <div class="hero">
 
 <h1>AI Learning OS</h1>
+<p>Become a Professional AI Engineer</p>
 
-<p>Your Personal AI Engineer Training Platform</p>
+<div class="quote">
 
-<div class="card">
-
-<p>
-“AI engineers don't just train models —
+“AI engineers don’t just train models —
 they build intelligent systems.”
-</p>
 
 </div>
 
@@ -97,22 +150,32 @@ they build intelligent systems.”
 
 <div class="card">
 <h3>Concepts Learned</h3>
-<h1>12</h1>
+<h1>24</h1>
 </div>
 
 <div class="card">
 <h3>Projects Built</h3>
-<h1>2</h1>
+<h1>4</h1>
 </div>
 
 <div class="card">
 <h3>Study Streak</h3>
-<h1>5 days</h1>
+<h1>9 Days</h1>
 </div>
 
 <div class="card">
-<h3>Hours Studied</h3>
-<h1>18</h1>
+<h3>Learning Hours</h3>
+<h1>62</h1>
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Roadmap Progress</h3>
+
+<div class="progressbar">
+<div class="progress"></div>
 </div>
 
 </div>
@@ -121,11 +184,21 @@ they build intelligent systems.”
 
 <div id="analytics" style="display:none">
 
+<div class="grid">
+
 <div class="card">
 
 <h3>Skill Radar</h3>
-
 <canvas id="radar"></canvas>
+
+</div>
+
+<div class="card">
+
+<h3>Learning Progress</h3>
+<canvas id="progressChart"></canvas>
+
+</div>
 
 </div>
 
@@ -149,10 +222,24 @@ new Chart(document.getElementById("radar"),{
 type:'radar',
 
 data:{
-labels:["Python","ML","DL","LLMs","Agents","MLOps"],
+labels:["Python","ML","Deep Learning","LLMs","Agents","MLOps"],
 datasets:[{
 label:"Skill Level",
-data:[80,60,40,30,20,10]
+data:[80,70,50,40,30,20]
+}]
+}
+
+})
+
+new Chart(document.getElementById("progressChart"),{
+
+type:'line',
+
+data:{
+labels:["Week1","Week2","Week3","Week4"],
+datasets:[{
+label:"Concepts Learned",
+data:[4,8,14,24]
 }]
 }
 
