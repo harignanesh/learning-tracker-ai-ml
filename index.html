@@ -1,177 +1,346 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Learning OS Dashboard</title>
-  <!-- Chart.js and Cal-Heatmap libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/cal-heatmap"></script>
-  <style>
-    /* Global styles */
-    body { margin: 0; font-family: sans-serif; background: url('bg.jpg') no-repeat center/cover; }
-    /* Glassmorphism panel style【37†L219-L228】 */
-    .glass {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-      padding: 20px;
-      color: #fff;
-    }
-    /* Responsive bento grid layout【38†L129-L137】 */
-    .dashboard { 
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(4, 1fr);
-    }
-    /* Media queries for responsiveness */
-    @media (max-width: 1024px) { .dashboard { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 767px)  { .dashboard { grid-template-columns: 1fr; } }
-    /* Grid area placements */
-    .hero       { grid-column: 1 / -1; }
-    .stats      { grid-column: 1 / -1; display: flex; gap: 16px; }
-    .charts     { grid-column: 1 / -1; display: flex; gap: 16px; }
-    .projects   { grid-column: 1 / 3; }
-    .roadmap    { grid-column: 3 / 5; }
-    .heatmap    { grid-column: 1 / -1; }
-    /* Sidebar */
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; padding: 20px; background: rgba(0,0,0,0.5); color: #fff; }
-    .sidebar nav ul { list-style: none; padding: 0; }
-    .sidebar nav li { margin: 10px 0; }
-  </style>
+<meta charset="UTF-8">
+<title>AI Learning OS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+<style>
+
+body{
+font-family:Inter;
+background:#0b0f19;
+color:#e6edf6;
+margin:0;
+}
+
+.sidebar{
+width:230px;
+height:100vh;
+background:#111827;
+position:fixed;
+padding:20px;
+}
+
+.sidebar h2{
+color:#00d4ff;
+}
+
+.nav{
+margin-top:30px;
+}
+
+.nav div{
+padding:10px;
+margin-bottom:10px;
+background:#1f2937;
+border-radius:6px;
+cursor:pointer;
+}
+
+.main{
+margin-left:250px;
+padding:30px;
+}
+
+.card{
+background:#151d2c;
+border-radius:10px;
+padding:20px;
+margin-bottom:20px;
+}
+
+.topic{
+display:inline-block;
+padding:6px 12px;
+margin:4px;
+background:#1f2937;
+border-radius:6px;
+cursor:pointer;
+}
+
+.topic.done{
+background:#00d4ff;
+color:black;
+}
+
+.project{
+background:#1f2937;
+padding:15px;
+border-radius:8px;
+margin-bottom:10px;
+}
+
+.heat{
+display:grid;
+grid-template-columns:repeat(14,15px);
+gap:4px;
+}
+
+.cell{
+width:15px;
+height:15px;
+background:#1f2937;
+}
+
+.cell.active{
+background:#00d4ff;
+}
+
+.chat{
+height:200px;
+overflow:auto;
+background:#0f1626;
+padding:10px;
+border-radius:6px;
+margin-bottom:10px;
+}
+
+input{
+padding:8px;
+width:80%;
+border-radius:6px;
+border:none;
+}
+
+button{
+padding:8px 12px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style>
+
 </head>
+
 <body>
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar glass">
-    <h2>My AI OS</h2>
-    <nav>
-      <ul>
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#stats">Stats</a></li>
-        <li><a href="#charts">Analytics</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#roadmap">Roadmap</a></li>
-        <li><a href="#heatmap">Heatmap</a></li>
-      </ul>
-    </nav>
-  </aside>
 
-  <!-- Main Dashboard Grid -->
-  <main class="dashboard" style="margin-left: 260px; padding: 20px;">
+<div id="tsparticles"></div>
 
-    <!-- Hero Section with Quote -->
-    <section id="hero" class="glass hero">
-      <h1>AI Learning OS</h1>
-      <p><em>“Education is the passport to the future, for tomorrow belongs to those who prepare for it today.”</em></p>
-    </section>
+<div class="sidebar">
 
-    <!-- Statistics Cards -->
-    <section id="stats" class="stats">
-      <div class="glass">
-        <h3>Concepts Learned</h3>
-        <p>24 <span style="font-size: 0.8em; color:lightgreen;">▲ +3 this week</span></p>
-      </div>
-      <div class="glass">
-        <h3>Projects</h3>
-        <p>3 <span style="font-size: 0.8em; color:lightgreen;">▲ +1 this week</span></p>
-      </div>
-      <div class="glass">
-        <h3>Study Streak</h3>
-        <p>5 days</p>
-      </div>
-      <div class="glass">
-        <h3>Hours</h3>
-        <p>40 hrs</p>
-      </div>
-    </section>
+<h2>AI Learning OS</h2>
 
-    <!-- Charts: Radar (Skills) and Progress -->
-    <section id="charts" class="charts">
-      <div class="glass" style="flex:1;">
-        <h3>Skill Radar</h3>
-        <canvas id="radarChart"></canvas>
-      </div>
-      <div class="glass" style="flex:1;">
-        <h3>Learning Progress</h3>
-        <canvas id="progressChart"></canvas>
-      </div>
-    </section>
+<div class="nav">
+<div onclick="show('dash')">Dashboard</div>
+<div onclick="show('roadmap')">Roadmap</div>
+<div onclick="show('projects')">Projects</div>
+<div onclick="show('analytics')">Analytics</div>
+<div onclick="show('mentor')">AI Mentor</div>
+<div onclick="show('srs')">Spaced Repetition</div>
+</div>
 
-    <!-- Projects Portfolio -->
-    <section id="projects" class="glass projects">
-      <h2>Projects</h2>
-      <ul>
-        <li>AI Creative Studio</li>
-        <li>AI Code Reviewer</li>
-        <li>PDF Brain (RAG)</li>
-        <li>Research Agent</li>
-      </ul>
-    </section>
+</div>
 
-    <!-- Interactive AI Roadmap -->
-    <section id="roadmap" class="glass roadmap">
-      <h2>AI Roadmap</h2>
-      <ul>
-        <li>Python & ML</li>
-        <li>LLMs & Prompting</li>
-        <li>Embeddings & RAG</li>
-        <li>Agents & Tools</li>
-        <li>AI Systems & MLOps</li>
-      </ul>
-    </section>
+<div class="main">
 
-    <!-- Learning Heatmap -->
-    <section id="heatmap" class="glass heatmap">
-      <h2>Study Heatmap</h2>
-      <div id="cal-heatmap"></div>
-    </section>
+<div id="dash">
 
-  </main>
+<div class="card">
+<h2>Welcome to AI Learning OS</h2>
 
-  <!-- Scripts for charts and heatmap -->
-  <script>
-    // Radar chart for skills (using Chart.js)【47†L58-L62】
-    const radarCtx = document.getElementById('radarChart').getContext('2d');
-    new Chart(radarCtx, {
-      type: 'radar',
-      data: {
-        labels: ['Python','NLP','RAG','Agents','MLOps'],
-        datasets: [{
-          label: 'Proficiency',
-          data: [80, 70, 60, 50, 65],
-          fill: true,
-          backgroundColor: 'rgba(54,162,235,0.2)',
-          borderColor: 'rgb(54,162,235)'
-        }]
-      },
-    });
+<p>Your personal AI engineer training platform.</p>
 
-    // Progress chart (placeholder example)
-    const progressCtx = document.getElementById('progressChart').getContext('2d');
-    new Chart(progressCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Foundations','Prompting','RAG','Agents','Systems'],
-        datasets: [{
-          label: 'Completion (%)',
-          data: [90, 70, 50, 30, 20],
-          backgroundColor: 'rgba(99,255,132,0.5)'
-        }]
-      },
-    });
+<p>
+Goal: Learn AI → Build Projects → Become AI Engineer
+</p>
 
-    // Calendar heatmap (GitHub-like contributions) using Cal-Heatmap【42†L313-L321】
-    new CalHeatMap().init({
-      itemSelector: '#cal-heatmap',
-      domain: 'month',
-      subDomain: 'day',
-      data: {
-        "2026-03-01": 3, "2026-03-02": 5, "2026-03-05": 2
-        // ... fill with actual study data ...
-      }
-    });
-  </script>
+</div>
+
+<div class="card">
+
+<h3>Learning Heatmap</h3>
+
+<div class="heat" id="heatmap"></div>
+
+</div>
+
+</div>
+
+<div id="roadmap" style="display:none">
+
+<div class="card">
+<h2>Phase 1 — Foundations</h2>
+
+<div class="topic">Python</div>
+<div class="topic">APIs</div>
+<div class="topic">LLM Basics</div>
+<div class="topic">Tokens</div>
+<div class="topic">Temperature</div>
+
+</div>
+
+<div class="card">
+
+<h2>Phase 2 — Prompt Engineering</h2>
+
+<div class="topic">Zero Shot</div>
+<div class="topic">Few Shot</div>
+<div class="topic">Chain of Thought</div>
+<div class="topic">Structured JSON</div>
+
+</div>
+
+<div class="card">
+
+<h2>Phase 3 — RAG Systems</h2>
+
+<div class="topic">Embeddings</div>
+<div class="topic">Vector DB</div>
+<div class="topic">Chunking</div>
+<div class="topic">Semantic Search</div>
+
+</div>
+
+<div class="card">
+
+<h2>Phase 4 — Agents</h2>
+
+<div class="topic">ReAct Loop</div>
+<div class="topic">Tool Calling</div>
+<div class="topic">LangGraph</div>
+
+</div>
+
+</div>
+
+<div id="projects" style="display:none">
+
+<div class="card">
+
+<h2>AI Projects</h2>
+
+<div class="project">
+<h3>AI Creative Studio</h3>
+<p>Generate images and speech.</p>
+</div>
+
+<div class="project">
+<h3>AI Code Reviewer</h3>
+<p>AI finds bugs and outputs JSON report.</p>
+</div>
+
+<div class="project">
+<h3>PDF Brain</h3>
+<p>Chat with your documents using RAG.</p>
+</div>
+
+<div class="project">
+<h3>Research Agent</h3>
+<p>Agent searches web and writes reports.</p>
+</div>
+
+</div>
+
+</div>
+
+<div id="analytics" style="display:none">
+
+<div class="card">
+<h3>Skill Radar</h3>
+<canvas id="radar"></canvas>
+</div>
+
+<div class="card">
+<h3>Learning Progress</h3>
+<canvas id="progress"></canvas>
+</div>
+
+</div>
+
+<div id="mentor" style="display:none">
+
+<div class="card">
+
+<h2>AI Mentor</h2>
+
+<div class="chat" id="chat"></div>
+
+<input id="msg" placeholder="Ask AI mentor..." />
+<button onclick="send()">Send</button>
+
+</div>
+
+</div>
+
+<div id="srs" style="display:none">
+
+<div class="card">
+
+<h2>Spaced Repetition</h2>
+
+<ul>
+<li>Review after 1 day</li>
+<li>Review after 3 days</li>
+<li>Review after 7 days</li>
+<li>Review after 30 days</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function show(id){
+document.querySelectorAll(".main > div").forEach(d=>d.style.display="none")
+document.getElementById(id).style.display="block"
+}
+
+document.querySelectorAll(".topic").forEach(t=>{
+t.onclick=()=>t.classList.toggle("done")
+})
+
+const heat=document.getElementById("heatmap")
+
+for(let i=0;i<140;i++){
+let c=document.createElement("div")
+c.className="cell"
+if(Math.random()>.7)c.classList.add("active")
+heat.appendChild(c)
+}
+
+new Chart(document.getElementById("radar"),{
+type:"radar",
+data:{
+labels:["Prompting","RAG","Agents","Systems","Python"],
+datasets:[{label:"Skills",data:[40,30,20,10,60]}]
+}
+})
+
+new Chart(document.getElementById("progress"),{
+type:"bar",
+data:{
+labels:["Topics","Projects","Reviews"],
+datasets:[{label:"Progress",data:[12,2,6]}]
+}
+})
+
+function send(){
+let msg=document.getElementById("msg").value
+let chat=document.getElementById("chat")
+chat.innerHTML+= "<div>🧑 "+msg+"</div>"
+chat.innerHTML+= "<div>🤖 Keep learning step-by-step.</div>"
+document.getElementById("msg").value=""
+}
+
+tsParticles.load("tsparticles",{
+particles:{
+number:{value:80},
+size:{value:2},
+move:{speed:1},
+links:{enable:true}
+}
+})
+
+</script>
+
 </body>
 </html>
