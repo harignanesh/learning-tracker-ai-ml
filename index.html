@@ -1,629 +1,199 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Learning OS v8</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
 <style>
-    :root {
-        --bg-base: #030712;
-        --glass-bg: rgba(15, 23, 42, 0.65);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-hover: rgba(255, 255, 255, 0.12);
-        --glow-cyan: #00f0ff;
-        --glow-purple: #8b5cf6;
-        --glow-emerald: #10b981;
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-    }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-base);
-        color: var(--text-main);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-    }
+body{
+font-family:Inter;
+margin:0;
+color:white;
+background:linear-gradient(135deg,#020617,#0f172a);
+display:flex;
+}
 
-    /* Advanced 3D Neural Canvas */
-    #neural-canvas {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        z-index: 0;
-    }
+#particles{
+position:fixed;
+width:100%;
+height:100%;
+z-index:-1;
+}
 
-    /* Glassmorphism Utilities */
-    .glass {
-        background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--glass-border);
-        border-radius: 16px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    .glass:hover {
-        border-color: rgba(0, 240, 255, 0.3);
-        box-shadow: 0 8px 40px rgba(0, 240, 255, 0.1);
-    }
+.sidebar{
+width:250px;
+background:rgba(15,23,42,0.8);
+backdrop-filter:blur(12px);
+padding:25px;
+height:100vh;
+border-right:1px solid rgba(255,255,255,0.1);
+}
 
-    /* Layout */
-    .app-container {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        width: 100%;
-        height: 100%;
-        padding: 16px;
-        gap: 16px;
-    }
+.sidebar button{
+display:flex;
+align-items:center;
+gap:10px;
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:none;
+border-radius:10px;
+background:rgba(255,255,255,0.05);
+color:white;
+cursor:pointer;
+transition:0.3s;
+}
 
-    /* Sidebar */
-    .sidebar {
-        width: 260px;
-        display: flex;
-        flex-direction: column;
-        padding: 24px;
-        flex-shrink: 0;
-    }
-    .logo {
-        font-size: 1.25rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        margin-bottom: 40px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #fff;
-    }
-    .logo-icon {
-        width: 28px; height: 28px;
-        background: linear-gradient(135deg, var(--glow-cyan), var(--glow-purple));
-        border-radius: 8px;
-        box-shadow: 0 0 15px var(--glow-cyan);
-    }
-    
-    .nav-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        text-align: left;
-        padding: 12px 16px;
-        margin-bottom: 8px;
-        border-radius: 10px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .nav-btn svg { width: 18px; height: 18px; opacity: 0.7; transition: 0.3s; }
-    .nav-btn:hover { background: var(--glass-hover); color: var(--text-main); }
-    .nav-btn:hover svg { opacity: 1; color: var(--glow-cyan); }
-    .nav-btn.active {
-        background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
-        border-left: 3px solid var(--glow-cyan);
-        color: #fff;
-    }
-    .nav-btn.active svg { color: var(--glow-cyan); opacity: 1; }
+.sidebar button:hover{
+background:#3b82f6;
+transform:translateX(5px);
+}
 
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 10px 30px 40px 20px;
-        scroll-behavior: smooth;
-    }
-    .main-content::-webkit-scrollbar { width: 6px; }
-    .main-content::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+.main{
+flex:1;
+padding:40px;
+}
 
-    .page { display: none; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .page.active { display: block; }
-    
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+.hero{
+margin-bottom:30px;
+}
 
-    /* Hero Section */
-    .hero { margin-bottom: 30px; }
-    .hero h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-    .quote-box { border-left: 3px solid var(--glow-purple); padding-left: 16px; margin-top: 16px; }
-    .quote-text { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--glow-cyan); font-style: italic; }
+.quote{
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:14px;
+backdrop-filter:blur(10px);
+}
 
-    /* Bento Grid */
-    .bento-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    .bento-col-2 { grid-column: span 2; }
-    
-    /* Stat Cards */
-    .stat-card { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
-    .stat-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-value { font-size: 2.2rem; font-weight: 700; color: #fff; margin: 12px 0 4px 0; }
-    .stat-trend { font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
-    .trend-up { color: var(--glow-emerald); }
-    
-    /* Chart Containers */
-    .chart-container { height: 220px; width: 100%; position: relative; }
+.bento{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+margin-top:20px;
+}
 
-    /* Mind Castle / Roadmap */
-    .roadmap-node { margin-bottom: 24px; }
-    .mc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;}
-    .mc-title { font-size: 1.25rem; font-weight: 600; color: #fff; }
-    .mc-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 4px 10px; background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.3); }
-    
-    .mc-content { display: flex; gap: 20px; }
-    .mc-image-box { width: 140px; height: 140px; border-radius: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .mc-image-box img { width: 100%; height: 100%; object-fit: cover; }
-    .mc-placeholder { position: absolute; font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--text-muted); text-align: center; }
-    
-    .mc-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .mc-details ul { margin-left: 16px; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; }
-    .mc-details li { margin-bottom: 6px; }
-    .mc-prompt { background: rgba(0, 240, 255, 0.05); border-left: 2px solid var(--glow-cyan); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #e2e8f0; }
+.card{
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:16px;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+transition:0.3s;
+}
 
-    /* Buttons */
-    .btn { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'JetBrains Mono', monospace; }
-    .btn:hover { background: var(--glow-cyan); border-color: var(--glow-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
-    .btn-done { background: var(--glow-emerald); border-color: var(--glow-emerald); color: #000; }
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 20px 50px rgba(0,0,0,0.7);
+}
 
-    /* Tables */
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--glass-border); font-size: 0.95rem; }
-    th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+.progressbar{
+height:12px;
+background:#1e293b;
+border-radius:10px;
+overflow:hidden;
+margin-top:10px;
+}
 
-    /* SRS Modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-    .modal-card { max-width: 450px; text-align: center; padding: 40px; }
-    .modal-icon { font-size: 3rem; margin-bottom: 16px; text-shadow: 0 0 20px var(--glow-cyan); }
+.progress{
+height:12px;
+background:linear-gradient(90deg,#22c55e,#06b6d4);
+width:65%;
+}
+
+canvas{
+margin-top:20px;
+}
+
 </style>
 </head>
+
 <body>
 
-<canvas id="neural-canvas"></canvas>
+<div id="particles"></div>
 
-<div class="app-container">
-    
-    <nav class="sidebar glass">
-        <div class="logo">
-            <div class="logo-icon"></div>
-            AI Learning OS
-        </div>
-        
-        <button class="nav-btn active" onclick="nav('dashboard')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-            Dashboard
-        </button>
-        <button class="nav-btn" onclick="nav('roadmap')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Cyber Roadmap
-        </button>
-        <button class="nav-btn" onclick="nav('projects')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-            Architectures
-        </button>
-        <button class="nav-btn" onclick="nav('srs')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-            Neural Memory (SRS)
-        </button>
-    </nav>
+<div class="sidebar">
 
-    <main class="main-content">
-        
-        <section id="dashboard" class="page active">
-            <div class="hero">
-                <h1>System Telemetry</h1>
-                <div class="quote-box">
-                    <p class="quote-text">"The best way to learn AI is to build intelligent systems."</p>
-                </div>
-            </div>
+<h2>AI OS</h2>
 
-            <div class="bento-grid">
-                <div class="stat-card glass">
-                    <div class="stat-header"><span>Concepts</span> <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-                    <div class="stat-value">24</div>
-                    <div class="stat-trend trend-up">▲ +3 today</div>
-                </div>
-                <div class="stat-card glass">
-                    <div class="stat-header"><span>Projects</span> <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
-                    <div class="stat-value">4</div>
-                    <div class="stat-trend trend-up">▲ +1 this week</div>
-                </div>
-                <div class="stat-card glass">
-                    <div class="stat-header"><span>Study Streak</span> <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-                    <div class="stat-value">12<span style="font-size:1rem; color:var(--text-muted)"> Days</span></div>
-                    <div class="stat-trend trend-up">▲ Active</div>
-                </div>
-                <div class="stat-card glass">
-                    <div class="stat-header"><span>Hours Logged</span> <svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                    <div class="stat-value">84</div>
-                    <div class="stat-trend">Target: 100</div>
-                </div>
-            </div>
+<button>🏠 Dashboard</button>
+<button>🧠 Roadmap</button>
+<button>🚀 Projects</button>
+<button>📊 Analytics</button>
 
-            <div class="bento-grid">
-                <div class="glass bento-col-2" style="padding: 24px;">
-                    <div class="stat-header" style="margin-bottom: 16px;">Skill Matrix Radar</div>
-                    <div class="chart-container"><canvas id="radarChart"></canvas></div>
-                </div>
-                <div class="glass bento-col-2" style="padding: 24px;">
-                    <div class="stat-header" style="margin-bottom: 16px;">Weekly Knowledge Retention</div>
-                    <div class="chart-container"><canvas id="lineChart"></canvas></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="roadmap" class="page">
-            <div class="hero">
-                <h1>AI Engineer Roadmap</h1>
-                <div class="subtitle">Attach your Mind Castle image generations to lock the architecture into memory.</div>
-            </div>
-
-            <div class="glass roadmap-node" style="padding: 24px;">
-                <div class="mc-header">
-                    <div class="mc-title">Phase 0: Math & Classic ML</div>
-                    <div class="mc-tag">FOUNDATIONS</div>
-                </div>
-                <div class="mc-content">
-                    <div class="mc-image-box">
-                        <div class="mc-placeholder">ADD IMAGE<br>HERE</div>
-                        <img src="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="mc-details">
-                        <ul>
-                            <li>Linear Algebra & Statistics Basics</li>
-                            <li>Data Manipulation (Pandas, NumPy)</li>
-                            <li>Classic ML (Scikit-Learn, Regression)</li>
-                        </ul>
-                        <div class="mc-prompt"><strong>Mind Castle:</strong> "The Stone Foundation. Geometric grids glowing in the ground, organizing chaotic raw data..."</div>
-                        <div style="margin-top: 12px;"><button class="btn" id="btn-0" onclick="markLearned('Math & ML Base', 0)">Init Protocol: Learn</button></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass roadmap-node" style="padding: 24px;">
-                <div class="mc-header">
-                    <div class="mc-title">Phase 1: Generative APIs & Context</div>
-                    <div class="mc-tag">LLM MECHANICS</div>
-                </div>
-                <div class="mc-content">
-                    <div class="mc-image-box">
-                        <div class="mc-placeholder">ADD IMAGE<br>HERE</div>
-                        <img src="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="mc-details">
-                        <ul>
-                            <li>Hugging Face, Gemini, OpenAI APIs</li>
-                            <li>Tokens, Temperature, Context Windows</li>
-                        </ul>
-                        <div class="mc-prompt"><strong>Mind Castle:</strong> "The Neon Toll Booth. Tokens are coins, window size is lane capacity, temperature is chaos..."</div>
-                        <div style="margin-top: 12px;"><button class="btn" id="btn-1" onclick="markLearned('GenAI APIs', 1)">Init Protocol: Learn</button></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass roadmap-node" style="padding: 24px;">
-                <div class="mc-header">
-                    <div class="mc-title">Phase 2: Prompts & Structured Data</div>
-                    <div class="mc-tag">ENGINEERING</div>
-                </div>
-                <div class="mc-content">
-                    <div class="mc-image-box">
-                        <div class="mc-placeholder">ADD IMAGE<br>HERE</div>
-                        <img src="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="mc-details">
-                        <ul>
-                            <li>Chain-of-Thought & Few-Shot prompting</li>
-                            <li>Forcing strictly typed JSON outputs for UIs</li>
-                        </ul>
-                        <div class="mc-prompt"><strong>Mind Castle:</strong> "The Sorting Factory. Raw thoughts go into a mold (JSON Schema) and come out as glowing blocks..."</div>
-                        <div style="margin-top: 12px;"><button class="btn" id="btn-2" onclick="markLearned('Structured Prompts', 2)">Init Protocol: Learn</button></div>
-                    </div>
-                </div>
-            </div>
-
-             <div class="glass roadmap-node" style="padding: 24px;">
-                <div class="mc-header">
-                    <div class="mc-title">Phase 3: Embeddings & RAG</div>
-                    <div class="mc-tag">ARCHITECTURE</div>
-                </div>
-                <div class="mc-content">
-                    <div class="mc-image-box">
-                        <div class="mc-placeholder">ADD IMAGE<br>HERE</div>
-                        <img src="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="mc-details">
-                        <ul>
-                            <li>Text to Vector Math (Embeddings)</li>
-                            <li>Storing in Vector DBs (ChromaDB / Pinecone)</li>
-                            <li>Retrieval-Augmented Generation (RAG)</li>
-                        </ul>
-                        <div class="mc-prompt"><strong>Mind Castle:</strong> "The Infinite Library. A robotic librarian gives every book a GPS coordinate based on its meaning..."</div>
-                        <div style="margin-top: 12px;"><button class="btn" id="btn-3" onclick="markLearned('RAG & Embeddings', 3)">Init Protocol: Learn</button></div>
-                    </div>
-                </div>
-            </div>
-            
-             <div class="glass roadmap-node" style="padding: 24px;">
-                <div class="mc-header">
-                    <div class="mc-title">Phase 4: Agentic AI & LangGraph</div>
-                    <div class="mc-tag">AUTONOMY</div>
-                </div>
-                <div class="mc-content">
-                    <div class="mc-image-box">
-                        <div class="mc-placeholder">ADD IMAGE<br>HERE</div>
-                        <img src="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="mc-details">
-                        <ul>
-                            <li>The ReAct Loop (Thought -> Action -> Observation)</li>
-                            <li>Building stateful agents with LangGraph</li>
-                        </ul>
-                        <div class="mc-prompt"><strong>Mind Castle:</strong> "The Robot with a Toolbelt. It pulls out a magnifying glass, then a wrench, and loops until done..."</div>
-                        <div style="margin-top: 12px;"><button class="btn" id="btn-4" onclick="markLearned('Agentic AI', 4)">Init Protocol: Learn</button></div>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <section id="projects" class="page">
-            <div class="hero">
-                <h1>Architecture Hub</h1>
-                <div class="subtitle">Enterprise take-home challenges designed for your portfolio.</div>
-            </div>
-
-            <div class="bento-grid" style="grid-template-columns: 1fr 1fr;">
-                <div class="glass" style="padding: 24px;">
-                    <div class="mc-header">
-                        <h3 style="color:#fff;">1. Context Parser</h3>
-                        <span class="mc-tag">REACT + GEMINI</span>
-                    </div>
-                    <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:16px;"><strong>Scenario:</strong> Users paste React code and get a JSON bug report back. Requires strict JSON prompting.</p>
-                    <button class="btn">View Specs</button>
-                </div>
-
-                <div class="glass" style="padding: 24px;">
-                    <div class="mc-header">
-                        <h3 style="color:#fff;">2. Knowledge Engine</h3>
-                        <span class="mc-tag">LANGCHAIN + CHROMA</span>
-                    </div>
-                    <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:16px;"><strong>Scenario:</strong> RAG system for a 500-page handbook. Must cite exact page numbers and include a Hallucination Check.</p>
-                    <button class="btn">View Specs</button>
-                </div>
-
-                <div class="glass bento-col-2" style="padding: 24px;">
-                    <div class="mc-header">
-                        <h3 style="color:#fff;">3. Autonomous Web Researcher</h3>
-                        <span class="mc-tag">LANGGRAPH + TAVILY</span>
-                    </div>
-                    <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:16px;"><strong>Scenario:</strong> Agent must search the live web, read 3 sources, and compile a Markdown report autonomously via state-machine loops.</p>
-                    <button class="btn">View Specs</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="srs" class="page">
-            <div class="hero">
-                <h1>Neural Memory (SRS)</h1>
-                <div class="subtitle">Execute the 3-step protocol 3 days after learning to lock architecture into long-term memory.</div>
-            </div>
-
-            <div class="bento-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 30px;">
-                <div class="glass" style="padding: 20px; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">👁️</div>
-                    <h4 style="color:#fff; margin-bottom: 5px;">1. Visualize</h4>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">Walk through the Mind Castle.</p>
-                </div>
-                <div class="glass" style="padding: 20px; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🗣️</div>
-                    <h4 style="color:#fff; margin-bottom: 5px;">2. Explain</h4>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">Teach it to a junior dev aloud.</p>
-                </div>
-                <div class="glass" style="padding: 20px; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">💻</div>
-                    <h4 style="color:#fff; margin-bottom: 5px;">3. Code</h4>
-                    <p style="font-size:0.85rem; color:var(--text-muted);">Write the core function blank.</p>
-                </div>
-            </div>
-
-            <div class="glass" style="padding: 0; overflow: hidden;">
-                <table>
-                    <thead><tr><th>Architecture Topic</th><th>Next Review Protocol</th><th>System Status</th></tr></thead>
-                    <tbody id="srs-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
 </div>
 
-<div class="modal-overlay" id="srs-modal">
-    <div class="glass modal-card">
-        <div class="modal-icon">⚠️</div>
-        <h2 style="color:var(--glow-cyan); margin-bottom:10px;">Memory Degradation Warning</h2>
-        <p style="color:var(--text-muted); margin-bottom:24px; font-size:0.95rem;">You have architectures ready for Spaced Repetition. Execute the review protocol now to prevent knowledge loss.</p>
-        <button class="btn" style="width:100%; background:var(--glow-cyan); color:#000;" onclick="closeModal()">Initialize Review</button>
-    </div>
+<div class="main">
+
+<div class="hero">
+
+<h1>AI Learning OS</h1>
+<p>Become a Professional AI Engineer</p>
+
+<div class="quote">
+“AI engineers don't just train models — they build intelligent systems.”
+</div>
+
+</div>
+
+<div class="bento">
+
+<div class="card">
+<h3>Concepts Learned</h3>
+<h1>24</h1>
+</div>
+
+<div class="card">
+<h3>Projects Built</h3>
+<h1>6</h1>
+</div>
+
+<div class="card">
+<h3>Study Streak</h3>
+<h1>11 days</h1>
+</div>
+
+<div class="card">
+<h3>Skill Radar</h3>
+<canvas id="radar"></canvas>
+</div>
+
+<div class="card">
+<h3>Roadmap Progress</h3>
+<div class="progressbar"><div class="progress"></div></div>
+</div>
+
+</div>
+
 </div>
 
 <script>
-    // --- Navigation ---
-    function nav(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if(pageId === 'srs') renderSRS();
-    }
 
-    // --- Chart.js Setup ---
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.font.family = 'Inter';
+tsParticles.load("particles",{
+particles:{
+number:{value:50},
+color:{value:"#3b82f6"},
+links:{enable:true,color:"#3b82f6"},
+move:{enable:true,speed:1}
+}
+})
 
-    new Chart(document.getElementById('radarChart'), {
-        type: 'radar',
-        data: {
-            labels: ['Python', 'LLM APIs', 'Prompts', 'Vector DBs', 'RAG', 'Agents'],
-            datasets: [{
-                label: 'Skill Integrity',
-                data: [90, 85, 75, 60, 40, 20],
-                backgroundColor: 'rgba(0, 240, 255, 0.15)',
-                borderColor: '#00f0ff',
-                pointBackgroundColor: '#8b5cf6',
-                borderWidth: 2
-            }]
-        },
-        options: { scales: { r: { angleLines: { color: 'rgba(255,255,255,0.05)' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { display: false } } }, plugins: { legend: { display: false } } }
-    });
+new Chart(document.getElementById("radar"),{
+type:'radar',
+data:{
+labels:["Python","ML","Deep Learning","LLMs","Agents","MLOps"],
+datasets:[{
+label:"Skill Level",
+data:[85,70,55,40,30,20]
+}]
+}
+})
 
-    new Chart(document.getElementById('lineChart'), {
-        type: 'line',
-        data: {
-            labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
-            datasets: [{
-                label: 'Concepts Retained',
-                data: [5, 12, 18, 22, 28, 35],
-                borderColor: '#8b5cf6',
-                backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                fill: true, tension: 0.4, borderWidth: 2
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
-    });
-
-    // --- SRS & Progress Logic ---
-    let srsData = JSON.parse(localStorage.getItem('ai_os_v8_srs')) || [];
-
-    function updateProgress() {
-        srsData.forEach(item => {
-            const btn = document.getElementById(`btn-${item.phaseId}`);
-            if(btn) { btn.innerText = "Protocol Complete ✓"; btn.classList.add("btn-done"); btn.disabled = true; }
-        });
-    }
-
-    function markLearned(topicName, phaseId) {
-        if (srsData.find(t => t.phaseId === phaseId)) return;
-        let dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 3);
-        srsData.push({ name: topicName, phaseId: phaseId, due: dueDate.toISOString().split('T')[0] });
-        localStorage.setItem('ai_os_v8_srs', JSON.stringify(srsData));
-        updateProgress();
-    }
-
-    function reviewTopic(index) {
-        let nextDue = new Date(); nextDue.setDate(nextDue.getDate() + 7);
-        srsData[index].due = nextDue.toISOString().split('T')[0];
-        localStorage.setItem('ai_os_v8_srs', JSON.stringify(srsData));
-        renderSRS();
-    }
-
-    function renderSRS() {
-        const tbody = document.getElementById('srs-body');
-        const today = new Date().toISOString().split('T')[0];
-        let html = '';
-        srsData.forEach((item, index) => {
-            const isDue = item.due <= today;
-            const statusText = isDue ? `<span style="color:var(--glow-cyan); font-weight:600;">ACTION REQUIRED</span>` : `<span style="color:var(--text-muted);">STANDBY</span>`;
-            const actionBtn = isDue ? `<button class="btn" style="border-color:var(--glow-cyan);" onclick="reviewTopic(${index})">Confirm Review</button>` : `<button class="btn" style="opacity:0.3; cursor:not-allowed;" disabled>Locked</button>`;
-            html += `<tr><td style="color:#fff; font-weight:500;">${item.name}</td><td style="font-family:'JetBrains Mono';">${item.due}</td><td><div style="display:flex; gap:15px; align-items:center;">${statusText} ${actionBtn}</div></td></tr>`;
-        });
-        tbody.innerHTML = html || `<tr><td colspan="3" style="text-align:center; padding:30px; color:var(--text-muted);">No architectures logged in memory banks.</td></tr>`;
-    }
-
-    function checkReminders() {
-        const today = new Date().toISOString().split('T')[0];
-        if (srsData.some(item => item.due <= today)) document.getElementById('srs-modal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('srs-modal').style.display = 'none';
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        const srsBtn = document.querySelectorAll('.nav-btn')[3];
-        showPageAndActivateBtn('srs', srsBtn);
-    }
-    
-    function showPageAndActivateBtn(pageId, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        btn.classList.add('active');
-        renderSRS();
-    }
-
-    // --- 3D Neural Canvas (High Performance) ---
-    const canvas = document.getElementById('neural-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height, particles = [];
-    let mouse = { x: null, y: null };
-
-    window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-
-    function initCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        particles = [];
-        const count = Math.floor((width * height) / 12000); 
-        for (let i = 0; i < count; i++) {
-            particles.push({
-                x: Math.random() * width, y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-                z: Math.random() * 2 + 0.5 // Depth factor
-            });
-        }
-    }
-
-    function drawParticles() {
-        ctx.clearRect(0, 0, width, height);
-        
-        for (let i = 0; i < particles.length; i++) {
-            let p = particles[i];
-            // Parallax mouse effect
-            let dxMouse = mouse.x ? (mouse.x - p.x) * 0.0005 * p.z : 0;
-            let dyMouse = mouse.y ? (mouse.y - p.y) * 0.0005 * p.z : 0;
-
-            p.x += p.vx + dxMouse; 
-            p.y += p.vy + dyMouse;
-            
-            if (p.x < 0 || p.x > width) p.vx *= -1;
-            if (p.y < 0 || p.y > height) p.vy *= -1;
-            
-            ctx.fillStyle = `rgba(0, 240, 255, ${0.1 * p.z})`;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.z * 1.5, 0, Math.PI * 2);
-            ctx.fill();
-
-            for (let j = i + 1; j < particles.length; j++) {
-                let p2 = particles[j];
-                let dx = p.x - p2.x; let dy = p.y - p2.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < 150) {
-                    ctx.strokeStyle = `rgba(139, 92, 246, ${0.15 * (1 - dist/150)})`;
-                    ctx.lineWidth = p.z * 0.5;
-                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                }
-            }
-        }
-        requestAnimationFrame(drawParticles);
-    }
-
-    window.addEventListener('resize', initCanvas);
-    initCanvas();
-    drawParticles();
-    
-    window.onload = () => { updateProgress(); renderSRS(); checkReminders(); };
 </script>
+
 </body>
 </html>
