@@ -1,326 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal AI Learning OS</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            color: white; 
-            background-color: #020617; 
-        }
-        
-        /* 3D Background Container */
-        #vanta-canvas-bg { 
-            position: fixed; 
-            z-index: -1; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-        }
-        
-        /* Glassmorphism panel styling */
-       .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-        }
-        
-        /* GitHub-style Heatmap CSS Grid Pattern */
-       .heatmap-container {
-            display: grid;
-            grid-auto-flow: column;
-            grid-template-rows: repeat(7, auto);
-            gap: 6px;
-            overflow-x: auto;
-        }
-        
-       .heat-cell { 
-            width: 14px; 
-            height: 14px; 
-            border-radius: 3px; 
-            background: rgba(255,255,255,0.05); 
-        }
-        
-        /* Heatmap Colors */
-       .heat-lvl-1 { background: #0e4429; }
-       .heat-lvl-2 { background: #006d32; }
-       .heat-lvl-3 { background: #26a641; }
-       .heat-lvl-4 { background: #39d353; }
-        
-        /* Hide scrollbars for cleaner look */
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Learning OS Dashboard</title>
+  <!-- Chart.js and Cal-Heatmap libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cal-heatmap"></script>
+  <style>
+    /* Global styles */
+    body { margin: 0; font-family: sans-serif; background: url('bg.jpg') no-repeat center/cover; }
+    /* Glassmorphism panel style【37†L219-L228】 */
+    .glass {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      padding: 20px;
+      color: #fff;
+    }
+    /* Responsive bento grid layout【38†L129-L137】 */
+    .dashboard { 
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    /* Media queries for responsiveness */
+    @media (max-width: 1024px) { .dashboard { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 767px)  { .dashboard { grid-template-columns: 1fr; } }
+    /* Grid area placements */
+    .hero       { grid-column: 1 / -1; }
+    .stats      { grid-column: 1 / -1; display: flex; gap: 16px; }
+    .charts     { grid-column: 1 / -1; display: flex; gap: 16px; }
+    .projects   { grid-column: 1 / 3; }
+    .roadmap    { grid-column: 3 / 5; }
+    .heatmap    { grid-column: 1 / -1; }
+    /* Sidebar */
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; padding: 20px; background: rgba(0,0,0,0.5); color: #fff; }
+    .sidebar nav ul { list-style: none; padding: 0; }
+    .sidebar nav li { margin: 10px 0; }
+  </style>
 </head>
-<body class="flex h-screen overflow-hidden text-slate-200">
+<body>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar glass">
+    <h2>My AI OS</h2>
+    <nav>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#stats">Stats</a></li>
+        <li><a href="#charts">Analytics</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="#heatmap">Heatmap</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-    <div id="vanta-canvas-bg"></div>
+  <!-- Main Dashboard Grid -->
+  <main class="dashboard" style="margin-left: 260px; padding: 20px;">
 
-    <aside class="w-64 glass-panel m-4 rounded-2xl p-6 flex flex-col justify-between hidden md:flex">
-        <div>
-            <h1 class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300 mb-8">
-                AI Learning OS
-            </h1>
-            <nav class="flex flex-col gap-3">
-                <button class="flex items-center gap-3 p-3 w-full rounded-xl bg-blue-600 text-white font-semibold transition hover:scale-105">
-                    🏠 Dashboard
-                </button>
-                <button class="flex items-center gap-3 p-3 w-full rounded-xl bg-white/5 hover:bg-white/10 transition hover:scale-105">
-                    🧠 Roadmap
-                </button>
-                <button class="flex items-center gap-3 p-3 w-full rounded-xl bg-white/5 hover:bg-white/10 transition hover:scale-105">
-                    🚀 Projects
-                </button>
-                <button class="flex items-center gap-3 p-3 w-full rounded-xl bg-white/5 hover:bg-white/10 transition hover:scale-105">
-                    📊 Analytics
-                </button>
-            </nav>
-        </div>
-        <div class="text-xs text-slate-400 text-center">
-            Goal: Become an AI Engineer
-        </div>
-    </aside>
+    <!-- Hero Section with Quote -->
+    <section id="hero" class="glass hero">
+      <h1>AI Learning OS</h1>
+      <p><em>“Education is the passport to the future, for tomorrow belongs to those who prepare for it today.”</em></p>
+    </section>
 
-    <main class="flex-1 p-4 overflow-y-auto no-scrollbar">
-        <div class="max-w-6xl mx-auto space-y-6 pb-10">
-            
-            <div class="glass-panel p-8 rounded-2xl text-center md:text-left">
-                <h2 class="text-4xl font-bold text-white mb-2">Your AI Engineer Dashboard</h2>
-                <p class="text-lg text-slate-300 italic px-4 py-2 bg-white/5 inline-block rounded-lg mt-2 border border-white/10">
-                    "AI engineers don't just train models — they build real, intelligent systems."
-                </p>
-            </div>
+    <!-- Statistics Cards -->
+    <section id="stats" class="stats">
+      <div class="glass">
+        <h3>Concepts Learned</h3>
+        <p>24 <span style="font-size: 0.8em; color:lightgreen;">▲ +3 this week</span></p>
+      </div>
+      <div class="glass">
+        <h3>Projects</h3>
+        <p>3 <span style="font-size: 0.8em; color:lightgreen;">▲ +1 this week</span></p>
+      </div>
+      <div class="glass">
+        <h3>Study Streak</h3>
+        <p>5 days</p>
+      </div>
+      <div class="glass">
+        <h3>Hours</h3>
+        <p>40 hrs</p>
+      </div>
+    </section>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center transition hover:-translate-y-1">
-                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Concepts</h3>
-                    <p class="text-4xl font-bold text-blue-400 mt-2">24</p>
-                    <span class="text-xs text-green-400 mt-1">▲ +3 this week</span>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center transition hover:-translate-y-1">
-                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Projects Built</h3>
-                    <p class="text-4xl font-bold text-teal-400 mt-2">4</p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center transition hover:-translate-y-1">
-                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Study Streak</h3>
-                    <p class="text-4xl font-bold text-purple-400 mt-2">11<span class="text-lg text-purple-300 ml-1">Days</span></p>
-                </div>
-                <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center transition hover:-translate-y-1">
-                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Focus Hours</h3>
-                    <p class="text-4xl font-bold text-orange-400 mt-2">45<span class="text-lg text-orange-300 ml-1">hrs</span></p>
-                </div>
-            </div>
+    <!-- Charts: Radar (Skills) and Progress -->
+    <section id="charts" class="charts">
+      <div class="glass" style="flex:1;">
+        <h3>Skill Radar</h3>
+        <canvas id="radarChart"></canvas>
+      </div>
+      <div class="glass" style="flex:1;">
+        <h3>Learning Progress</h3>
+        <canvas id="progressChart"></canvas>
+      </div>
+    </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="glass-panel p-6 rounded-2xl col-span-1 flex flex-col items-center">
-                    <h3 class="text-lg font-bold text-white mb-4 w-full">Skill Radar</h3>
-                    <div class="w-full max-w-[250px]">
-                        <canvas id="skillRadar"></canvas>
-                    </div>
-                </div>
-                
-                <div class="glass-panel p-6 rounded-2xl col-span-1 md:col-span-2 flex flex-col justify-center">
-                    <h3 class="text-lg font-bold text-white mb-4">Learning Progress Tracker</h3>
-                    <div class="heatmap-container" id="gh-heatmap">
-                        </div>
-                </div>
-            </div>
+    <!-- Projects Portfolio -->
+    <section id="projects" class="glass projects">
+      <h2>Projects</h2>
+      <ul>
+        <li>AI Creative Studio</li>
+        <li>AI Code Reviewer</li>
+        <li>PDF Brain (RAG)</li>
+        <li>Research Agent</li>
+      </ul>
+    </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <div class="glass-panel p-6 rounded-2xl">
-                    <h3 class="text-xl font-bold text-white mb-6">AI Engineer Roadmap</h3>
-                    
-                    <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-800 text-slate-200 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">1</div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/5 p-4 rounded-xl border border-blue-500/30">
-                                <h4 class="font-bold text-blue-300">Phase 1: Foundations</h4>
-                                <p class="text-sm text-slate-400 mt-1">Python, APIs, Tokens, Context Windows.</p>
-                                <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-1 rounded mt-2 inline-block">Pluralsight: Gen AI Big Picture</span>
-                            </div>
-                        </div>
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-800 text-slate-200 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">2</div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/5 p-4 rounded-xl border border-purple-500/30">
-                                <h4 class="font-bold text-purple-300">Phase 2: Prompt Engineering</h4>
-                                <p class="text-sm text-slate-400 mt-1">Few-shot, Chain-of-thought, JSON outputs.</p>
-                                <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded mt-2 inline-block">Pluralsight: Prompt Eng. Path</span>
-                            </div>
-                        </div>
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-slate-600 bg-slate-800 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">3</div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/5 p-4 rounded-xl border border-white/10 opacity-70">
-                                <h4 class="font-bold text-teal-300">Phase 3: RAG Systems</h4>
-                                <p class="text-sm text-slate-400 mt-1">Embeddings, Vector DBs, Semantic Search.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-slate-600 bg-slate-800 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">4</div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/5 p-4 rounded-xl border border-white/10 opacity-70">
-                                <h4 class="font-bold text-slate-300">Phase 4: Agentic AI</h4>
-                                <p class="text-sm text-slate-400 mt-1">ReAct loops, Tool calling, LangGraph.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-slate-600 bg-slate-800 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">5</div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/5 p-4 rounded-xl border border-white/10 opacity-70">
-                                <h4 class="font-bold text-slate-300">Phase 5: System Design</h4>
-                                <p class="text-sm text-slate-400 mt-1">AI Architecture, LLMOps, Evaluation.</p>
-                            </div>
-                        </div>
+    <!-- Interactive AI Roadmap -->
+    <section id="roadmap" class="glass roadmap">
+      <h2>AI Roadmap</h2>
+      <ul>
+        <li>Python & ML</li>
+        <li>LLMs & Prompting</li>
+        <li>Embeddings & RAG</li>
+        <li>Agents & Tools</li>
+        <li>AI Systems & MLOps</li>
+      </ul>
+    </section>
 
-                    </div>
-                </div>
+    <!-- Learning Heatmap -->
+    <section id="heatmap" class="glass heatmap">
+      <h2>Study Heatmap</h2>
+      <div id="cal-heatmap"></div>
+    </section>
 
-                <div class="space-y-6">
-                    
-                    <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-xl font-bold text-white mb-4">Project Portfolio</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition cursor-pointer hover:-translate-y-1">
-                                <div class="text-2xl mb-2">🎨</div>
-                                <h4 class="font-bold text-white">AI Creative Studio</h4>
-                                <p class="text-xs text-slate-400 mt-1">Stable Diffusion + TTS image & speech generation.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition cursor-pointer hover:-translate-y-1">
-                                <div class="text-2xl mb-2">🐛</div>
-                                <h4 class="font-bold text-white">AI Code Reviewer</h4>
-                                <p class="text-xs text-slate-400 mt-1">Paste code, AI returns JSON bug reports.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition cursor-pointer hover:-translate-y-1">
-                                <div class="text-2xl mb-2">📄</div>
-                                <h4 class="font-bold text-white">PDF Brain (RAG)</h4>
-                                <p class="text-xs text-slate-400 mt-1">Upload PDF, embed text, and chat with it.</p>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition cursor-pointer hover:-translate-y-1">
-                                <div class="text-2xl mb-2">🕵️‍♂️</div>
-                                <h4 class="font-bold text-white">Research Agent</h4>
-                                <p class="text-xs text-slate-400 mt-1">AI autonomously searches web and writes reports.</p>
-                            </div>
-                        </div>
-                    </div>
+  </main>
 
-                    <div class="glass-panel p-6 rounded-2xl">
-                        <div class="flex justify-between items-end mb-4">
-                            <div>
-                                <h3 class="text-xl font-bold text-white">Mind Palace Tracker</h3>
-                                <p class="text-xs text-slate-400 mt-1">Review Schedule: Learn ➔ 3 days ➔ 7 days</p>
-                            </div>
-                            <span class="text-[10px] font-bold bg-green-500/20 text-green-400 px-2 py-1 rounded uppercase tracking-wide">Spaced Repetition</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-2 text-center">
-                            <div class="bg-white/5 py-3 rounded-lg flex flex-col items-center border-b-2 border-blue-500">
-                                <span class="text-2xl">🎫</span>
-                                <span class="text-[10px] uppercase tracking-wider mt-1 text-slate-300">Tokens</span>
-                                <span class="text-[9px] text-slate-500">Toll Booth</span>
-                            </div>
-                            <div class="bg-white/5 py-3 rounded-lg flex flex-col items-center border-b-2 border-purple-500">
-                                <span class="text-2xl">📍</span>
-                                <span class="text-[10px] uppercase tracking-wider mt-1 text-slate-300">Embeds</span>
-                                <span class="text-[9px] text-slate-500">GPS Coords</span>
-                            </div>
-                            <div class="bg-white/5 py-3 rounded-lg flex flex-col items-center border-b-2 border-teal-500">
-                                <span class="text-2xl">📚</span>
-                                <span class="text-[10px] uppercase tracking-wider mt-1 text-slate-300">RAG</span>
-                                <span class="text-[9px] text-slate-500">Library</span>
-                            </div>
-                            <div class="bg-white/5 py-3 rounded-lg flex flex-col items-center border-b-2 border-orange-500">
-                                <span class="text-2xl">🛠️</span>
-                                <span class="text-[10px] uppercase tracking-wider mt-1 text-slate-300">Agents</span>
-                                <span class="text-[9px] text-slate-500">Robot w/ Tools</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- Scripts for charts and heatmap -->
+  <script>
+    // Radar chart for skills (using Chart.js)【47†L58-L62】
+    const radarCtx = document.getElementById('radarChart').getContext('2d');
+    new Chart(radarCtx, {
+      type: 'radar',
+      data: {
+        labels: ['Python','NLP','RAG','Agents','MLOps'],
+        datasets: [{
+          label: 'Proficiency',
+          data: [80, 70, 60, 50, 65],
+          fill: true,
+          backgroundColor: 'rgba(54,162,235,0.2)',
+          borderColor: 'rgb(54,162,235)'
+        }]
+      },
+    });
 
-        </div>
-    </main>
+    // Progress chart (placeholder example)
+    const progressCtx = document.getElementById('progressChart').getContext('2d');
+    new Chart(progressCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Foundations','Prompting','RAG','Agents','Systems'],
+        datasets: [{
+          label: 'Completion (%)',
+          data: [90, 70, 50, 30, 20],
+          backgroundColor: 'rgba(99,255,132,0.5)'
+        }]
+      },
+    });
 
-    <script>
-        // 1. Initialize 3D Background with Vanta.js
-        VANTA.NET({
-            el: "#vanta-canvas-bg",
-            mouseControls: true,
-            touchControls: true,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 1.00,
-            scaleMobile: 1.00,
-            color: 0x3b82f6, // Brand Blue
-            backgroundColor: 0x020617, // Slate 950
-            points: 15.00,
-            maxDistance: 22.00,
-            spacing: 16.00
-        });
-
-        // 2. Initialize Skill Radar Chart (Chart.js)
-        const ctx = document.getElementById('skillRadar').getContext('2d');
-        new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels:,
-                datasets:,
-                    backgroundColor: 'rgba(56, 189, 248, 0.2)',
-                    borderColor: 'rgba(56, 189, 248, 0.8)',
-                    pointBackgroundColor: 'rgba(56, 189, 248, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(56, 189, 248, 1)',
-                    borderWidth: 2,
-                }]
-            },
-            options: {
-                scales: {
-                    r: {
-                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                        pointLabels: { color: '#e2e8f0', font: { size: 11, family: 'Inter' } },
-                        ticks: { display: false, min: 0, max: 100 }
-                    }
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // 3. Generate GitHub-style Contribution Heatmap
-        const heatmapContainer = document.getElementById('gh-heatmap');
-        const totalCells = 7 * 30; // 7 rows x ~30 columns 
-        
-        for (let i = 0; i < totalCells; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'heat-cell';
-            
-            // Randomly generate "activity" to simulate your 11 day streak
-            const randomVal = Math.random();
-            if (randomVal > 0.6) {
-                const level = Math.floor(Math.random() * 4) + 1;
-                cell.classList.add(`heat-lvl-${level}`);
-            }
-            
-            heatmapContainer.appendChild(cell);
-        }
-    </script>
+    // Calendar heatmap (GitHub-like contributions) using Cal-Heatmap【42†L313-L321】
+    new CalHeatMap().init({
+      itemSelector: '#cal-heatmap',
+      domain: 'month',
+      subDomain: 'day',
+      data: {
+        "2026-03-01": 3, "2026-03-02": 5, "2026-03-05": 2
+        // ... fill with actual study data ...
+      }
+    });
+  </script>
 </body>
 </html>
